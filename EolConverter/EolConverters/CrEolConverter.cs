@@ -9,6 +9,13 @@ namespace EolConverter.EolConverters
 {
     internal class CrEolConverter : IEolConverter
     {
+        EncodingDetector encodingDetector;
+
+        public CrEolConverter(EncodingDetector encodingDetector)
+        {
+            this.encodingDetector = encodingDetector;
+        }
+
         public void Convert(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
             if (data == null || dataLength == 0 || !data.HasAnyEndOfLine())
@@ -18,7 +25,7 @@ namespace EolConverter.EolConverters
                 return;
             }
 
-            var encoding = data.GetEncoding(dataLength);
+            var encoding = encodingDetector.GetEncoding(data, dataLength);
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
 
             int outputIndex = 0;

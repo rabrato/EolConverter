@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace EolConverter.EolConverters
 {
-    internal class EolByte
+    public class EolByte
     {
-        internal const byte Zero = 0;
-        internal const byte Cr = 13;
-        internal const byte Lf = 10;
+        public const byte Zero = 0;
+        public const byte Cr = 13;
+        public const byte Lf = 10;
     }
 }

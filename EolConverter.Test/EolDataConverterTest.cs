@@ -17,10 +17,10 @@ namespace EolConverter.Test
         {
             string file = @"c:\tmp\UTF16BENoBOM.txt";
             string fileOutput = @"c:\tmp\fileoutput_32.c";
-            const int BLOCK_SIZE = 1024;
+            const int BlockSize = 1024;
 
-            byte[] readBuffer = new byte[BLOCK_SIZE];
-            byte[] outputBuffer = new byte[BLOCK_SIZE * 2];
+            byte[] readBuffer = new byte[BlockSize];
+            byte[] outputBuffer = new byte[BlockSize * 2];
             EolDataConverter eolConverter = new EolDataConverter(EolConversion.CR);
             
 //            using (FileStream reader = new FileStream(file, FileMode.OpenOrCreate))
@@ -39,9 +39,9 @@ namespace EolConverter.Test
             {
                 int read = 0;
                 int outputLength;
-                while ((read = reader.Read(readBuffer, 0, BLOCK_SIZE)) != 0)
+                while ((read = reader.Read(readBuffer, 0, BlockSize)) != 0)
                 {
-                    var encoding = readBuffer.GetEncoding(read);
+                    var encoding = new EncodingDetector().GetEncoding(readBuffer, read);
                     eolConverter.Convert(readBuffer, read, outputBuffer, out outputLength);
                     writer.Write(outputBuffer, 0, outputLength);
                 }

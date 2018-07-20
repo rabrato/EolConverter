@@ -6,31 +6,31 @@ using System.Threading.Tasks;
 
 namespace EolConverter.Encoding
 {
-    public static class EncodingDetectorFromBom
+    internal class EncodingDetectorFromBom
     {
-        public static EncodingType GetEncodingFromBom(this byte[] data)
+        internal EncodingType GetEncodingFromBom(byte[] data, int dataLength)
         {
-            if (data.HasUtf8Bom())
+            if (HasUtf8Bom(data, dataLength))
             {
                 return EncodingType.Utf8;
             }
 
-            if (data.HasUtf16LeBom())
+            if (HasUtf16LeBom(data, dataLength))
             {
                 return EncodingType.Utf16LE;
             }
 
-            if (data.HasUtf16BeBom())
+            if (HasUtf16BeBom(data, dataLength))
             {
                 return EncodingType.Utf16BE;
             }
 
-            if (data.HasUtf32LeBom())
+            if (HasUtf32LeBom(data, dataLength))
             {
                 return EncodingType.Utf32LE;
             }
 
-            if (data.HasUtf32BeBom())
+            if (HasUtf32BeBom(data, dataLength))
             {
                 return EncodingType.Utf32BE;
             }
@@ -38,9 +38,9 @@ namespace EolConverter.Encoding
             return EncodingType.None;
         }
 
-        private static bool HasUtf8Bom(this byte[] data)
+        private bool HasUtf8Bom(byte[] data, int dataLength)
         {
-            if (data.Length < 3)
+            if (!HasMinLength(data, dataLength, minLength: 3))
             {
                 return false;
             }
@@ -48,19 +48,19 @@ namespace EolConverter.Encoding
             return data[0] == 0xef && data[1] == 0xbb && data[2] == 0xbf;
         }
 
-        private static bool HasUtf16LeBom(this byte[] data)
+        private bool HasUtf16LeBom(byte[] data, int dataLength)
         {
-            if (data.Length < 2)
+            if (!HasMinLength(data, dataLength, minLength: 2))
             {
                 return false;
             }
 
-            return data[0] == 0xff && data[1] == 0xfe && !data.HasUtf32LeBom();
+            return data[0] == 0xff && data[1] == 0xfe && !HasUtf32LeBom(data, dataLength);
         }
 
-        private static bool HasUtf16BeBom(this byte[] data)
+        private bool HasUtf16BeBom(byte[] data, int dataLength)
         {
-            if (data.Length < 2)
+            if (!HasMinLength(data, dataLength, minLength: 2))
             {
                 return false;
             }
@@ -68,9 +68,9 @@ namespace EolConverter.Encoding
             return data[0] == 0xfe && data[1] == 0xff;
         }
 
-        private static bool HasUtf32LeBom(this byte[] data)
+        private bool HasUtf32LeBom(byte[] data, int dataLength)
         {
-            if (data.Length < 4)
+            if (!HasMinLength(data, dataLength, minLength: 4))
             {
                 return false;
             }
@@ -78,14 +78,19 @@ namespace EolConverter.Encoding
             return data[0] == 0xff && data[1] == 0xfe && data[2] == 0 && data[3] == 0;
         }
 
-        private static bool HasUtf32BeBom(this byte[] data)
+        private bool HasUtf32BeBom(byte[] data, int dataLength)
         {
-            if (data.Length < 4)
+            if (!HasMinLength(data, dataLength, minLength: 4))
             {
                 return false;
             }
 
             return data[0] == 0 && data[1] == 0 && data[2] == 0xfe && data[3] == 0xff;
+        }
+
+        private bool HasMinLength(byte[] data, int dataLength, int minLength)
+        {
+            return data.Length >= minLength && dataLength >= minLength;
         }
     }
 }

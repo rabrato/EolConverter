@@ -7,17 +7,31 @@ using System.Threading.Tasks;
 
 namespace EolConverter.Encoding
 {
-    public static class EncodingDetector
+    public class EncodingDetector
     {
-        public static EncodingType GetEncoding(this byte[] data, int dataLength)
+        private EncodingDetectorFromBom detectorFromBom;
+        private EncodingDetectorFromEol detectorFromEol;
+
+        public EncodingDetector()
         {
-            var encoding = data.GetEncodingFromBom();
+            detectorFromBom = new EncodingDetectorFromBom();
+            detectorFromEol = new EncodingDetectorFromEol();
+        }
+
+        public EncodingType GetEncoding(byte[] data, int dataLength)
+        {
+            if (data == null || data.Length == 0 || dataLength == 0)
+            {
+                return EncodingType.None;
+            }
+
+            var encoding = detectorFromBom.GetEncodingFromBom(data, dataLength);
             if (encoding != EncodingType.None)
             {
                 return encoding;
             }
 
-            return data.GetEncodingFromEolBytes(dataLength);
+            return detectorFromEol.GetEncodingFromEolBytes(data, dataLength);
         }
     }
 }

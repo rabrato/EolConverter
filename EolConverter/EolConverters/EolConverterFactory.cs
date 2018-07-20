@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EolConverter.Encoding;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace EolConverter.EolConverters
             {
                 case EolConversion.CR:
                     {
-                        return new CrEolConverter();
+                        return new CrEolConverter(new EncodingDetector());
                     }
                 default:
                     {
