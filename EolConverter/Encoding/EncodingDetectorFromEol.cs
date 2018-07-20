@@ -31,10 +31,9 @@ namespace EolConverter.Encoding
                 return utf16Encoding;
             }
 
-            var utf8Encoding = GetUtf8Encoding(data, eolIndex.Value, dataLength);
-            if (utf8Encoding != EncodingType.None)
+            if (IstUtf8Encoding(data, eolIndex.Value, dataLength))
             {
-                return utf8Encoding;
+                return EncodingType.Utf8;
             }
 
             return EncodingType.None;
@@ -54,49 +53,46 @@ namespace EolConverter.Encoding
             int dataLength, EncodingType leEncoding, EncodingType beEncoding)
         {
             int numBytesPerUnit = leEncoding.GetNumBytesPerUnit();
+
+            // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
+            if (ContainsZeroBytesUnit(data, dataLength, numBytesPerUnit))
+            {
+                return EncodingType.None;
+            }
+
             int numZeros = numBytesPerUnit - 1;
 
             bool isPrecededByZeros = IsPrecededByZeros(data, eolIndex, numZeros);
             bool isFollowedByZeros = IsFollowedByZeros(data, eolIndex, numZeros, dataLength);
-            if (isPrecededByZeros && isFollowedByZeros)
+
+            bool isLastByteInUnit = eolIndex % numBytesPerUnit == numBytesPerUnit - 1;
+            bool isFirstByteInUnit = eolIndex % numBytesPerUnit == 0;
+
+            if (isFirstByteInUnit && isFollowedByZeros)
             {
-                // Check if the first EOL found is CRLF
-                int crIndex = eolIndex;
-                int lfIndex = eolIndex + numBytesPerUnit;
-                if (data[crIndex] == EolByte.Cr && data[lfIndex] == EolByte.Lf)
-                {
-                    bool isCrLfPrecededByZeros = isPrecededByZeros;
-                    bool isCrLfFollowedByZeros = IsFollowedByZeros(data, lfIndex, numZeros, dataLength);
-                    return GetEncodingFromSurroundingZeros(isCrLfPrecededByZeros, isCrLfFollowedByZeros, leEncoding, beEncoding);
-                }
+                return leEncoding;
             }
-            else
+
+            if (isLastByteInUnit && isPrecededByZeros)
             {
-                return GetEncodingFromSurroundingZeros(isPrecededByZeros, isFollowedByZeros, leEncoding, beEncoding);
+                return beEncoding;
             }
 
             return EncodingType.None;
         }
 
-        private EncodingType GetEncodingFromSurroundingZeros(bool isPrecededByZeros, bool isFollowedByZeros,
-            EncodingType leEncoding, EncodingType beEncoding)
+        private bool ContainsZeroBytesUnit(byte[] data, int dataLength, int numBytesPerUnit)
         {
-            if (isPrecededByZeros && isFollowedByZeros)
+            var zeroBytesUnit = new byte[numBytesPerUnit];
+            for (int i = 0; i < dataLength - numBytesPerUnit; i++)
             {
-                return EncodingType.None;
+                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == EolByte.Zero))
+                {
+                    return true;
+                }
             }
 
-            if (isPrecededByZeros)
-            {
-                return beEncoding;
-            }
-
-            if (isFollowedByZeros)
-            {
-                return leEncoding;
-            }
-
-            return EncodingType.None;
+            return false;
         }
 
         private bool IsPrecededByZeros(byte[] data, int byteIndex, int numZeros)
@@ -135,32 +131,22 @@ namespace EolConverter.Encoding
             return true;
         }
 
-        private EncodingType GetUtf8Encoding(byte[] data, int eolIndex, int dataLength)
+        private bool IstUtf8Encoding(byte[] data, int eolIndex, int dataLength)
         {
-            int byteIndexPreviousToEol;
-            int byteIndexNextToEol;
-            // Check if the first EOL found is CRLF
-            if (data[eolIndex] == EolByte.Cr && eolIndex + 1 < dataLength && data[eolIndex + 1] == EolByte.Lf)
+            // If there is any 0 within the data then can't be utf-8
+            if (data.Take(dataLength).Any(b => b == EolByte.Zero))
             {
-                int crIndex = eolIndex;
-                int lfIndex = eolIndex + 1;
-                byteIndexPreviousToEol = crIndex - 1;
-                byteIndexNextToEol = lfIndex + 1;
-            }
-            else
-            {
-                byteIndexPreviousToEol = eolIndex - 1;
-                byteIndexNextToEol = eolIndex + 1;
+                return false;
             }
 
             // Check eol is not sorrounded by zero bytes, checking also corner cases (eol is first or last bytes)
-            if ((byteIndexPreviousToEol < 0 || data[byteIndexPreviousToEol] != EolByte.Zero)
-                && (byteIndexNextToEol >= dataLength || data[byteIndexNextToEol + 1] != EolByte.Zero))
+            if ((eolIndex == 0 || data[eolIndex - 1] != EolByte.Zero)
+                && (eolIndex == dataLength - 1 || data[eolIndex + 1] != EolByte.Zero))
             {
-                return EncodingType.Utf8;
+                return true;
             }
 
-            return EncodingType.None;
+            return false;
         }
     }
 }

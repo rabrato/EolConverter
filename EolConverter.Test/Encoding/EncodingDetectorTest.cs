@@ -101,7 +101,7 @@ namespace EolConverter.Test.Encoding
         {
             // Arrange
             byte[] data = GetData();
-            int dataLength = 100;
+            int dataLength = 10 * expectedEncoding.GetNumBytesPerUnit();
             FillDataWithDummyValues(data, dataLength);
             eolBytes.CopyTo(data, dataLength - eolBytes.Length);
 
@@ -115,14 +115,15 @@ namespace EolConverter.Test.Encoding
         }
 
         [Theory]
-        [InlineData(new byte[3] { 0, EolByte.Cr, 0 })]
-        [InlineData(new byte[3] { 0, EolByte.Lf, 0 })]
-        [InlineData(new byte[5] { 0, EolByte.Cr, 0, EolByte.Lf, 0 })]
-        public void GetEncoding_WhenEolIsSurroundedByOneZeros_ThenCanNotDistinguishUtf16Endiannes(byte[] eolBytesZeroSurrounded)
+        [InlineData(new byte[2] { EolByte.Cr, 0, }, 11)]
+        [InlineData(new byte[4] { EolByte.Cr, 0, 0, 0 }, 9)]
+        [InlineData(new byte[4] { EolByte.Lf, 0, 0, 0 }, 10)]
+        [InlineData(new byte[4] { EolByte.Lf, 0, 0, 0 }, 11)]
+        public void GetEncoding_WhenEolIsNotFirstByteInUnitAndIsFollowedByZeros_ThenEncodingCanNotBeDetected(byte[] eolBytesFollowedByZeros, int startIndex)
         {
             // Arrange
             byte[] data = GetData(initializeWithDummyValues: true);
-            eolBytesZeroSurrounded.CopyTo(data, 10);
+            eolBytesFollowedByZeros.CopyTo(data, startIndex);
 
             CreateSut();
 
@@ -134,14 +135,15 @@ namespace EolConverter.Test.Encoding
         }
 
         [Theory]
-        [InlineData(new byte[7] { 0, 0, 0, EolByte.Cr, 0, 0, 0 })]
-        [InlineData(new byte[7] { 0, 0, 0, EolByte.Lf, 0, 0, 0 })]
-        [InlineData(new byte[11] { 0, 0, 0, EolByte.Cr, 0, 0, 0, EolByte.Lf, 0, 0, 0 })]
-        public void GetEncoding_WhenEolIsSurroundedByThreeZeros_ThenCanNotDistinguishUtf32Endiannes(byte[] eolBytesZeroSurrounded)
+        [InlineData(new byte[2] { 0, EolByte.Cr }, 9)]
+        [InlineData(new byte[4] { 0, 0, 0, EolByte.Cr }, 5)]
+        [InlineData(new byte[4] { 0, 0, 0, EolByte.Lf }, 6)]
+        [InlineData(new byte[4] { 0, 0, 0, EolByte.Lf }, 7)]
+        public void GetEncoding_WhenEolIsNotLastByteInUnitAndIsPrecededByZeros_ThenEncodingCanNotBeDetected(byte[] eolBytesPrecededByZeros, int startIndex)
         {
             // Arrange
             byte[] data = GetData(initializeWithDummyValues: true);
-            eolBytesZeroSurrounded.CopyTo(data, 10);
+            eolBytesPrecededByZeros.CopyTo(data, startIndex);
 
             CreateSut();
 
