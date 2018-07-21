@@ -1,4 +1,4 @@
-﻿using EolConverter.EolConverters;
+﻿using EolConverter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,14 +68,14 @@ namespace EolConverter.Encoding
         private bool IsUtf8(byte[] data, int dataLength, int eolIndex)
         {
             // If there is any 0 within the data then can't be utf-8
-            if (data.Take(dataLength).Any(b => b == EolByte.Empty))
+            if (data.Take(dataLength).Any(b => b == ByteCode.Empty))
             {
                 return false;
             }
 
             // Check eol is not sorrounded by zero bytes, checking also corner cases (eol is first or last bytes)
-            if ((eolIndex == 0 || data[eolIndex - 1] != EolByte.Empty)
-                && (eolIndex == dataLength - 1 || data[eolIndex + 1] != EolByte.Empty))
+            if ((eolIndex == 0 || data[eolIndex - 1] != ByteCode.Empty)
+                && (eolIndex == dataLength - 1 || data[eolIndex + 1] != ByteCode.Empty))
             {
                 return true;
             }
@@ -118,7 +118,7 @@ namespace EolConverter.Encoding
             var zeroBytesUnit = new byte[numBytesPerUnit];
             for (int i = 0; i < dataLength - numBytesPerUnit; i++)
             {
-                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == EolByte.Empty))
+                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == ByteCode.Empty))
                 {
                     return true;
                 }
@@ -136,7 +136,7 @@ namespace EolConverter.Encoding
 
             for (int i = 1; i <= numZeros; i++)
             {
-                if (data[byteIndex - i] != EolByte.Empty)
+                if (data[byteIndex - i] != ByteCode.Empty)
                 {
                     return false;
                 }
@@ -154,7 +154,7 @@ namespace EolConverter.Encoding
 
             for (int i = numZeros; i > 0; i--)
             {
-                if (data[byteIndex + i] != EolByte.Empty)
+                if (data[byteIndex + i] != ByteCode.Empty)
                 {
                     return false;
                 }

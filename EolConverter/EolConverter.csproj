@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EolConverter</RootNamespace>
     <AssemblyName>EolConverter</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,11 +48,7 @@
     <Compile Include="Encoding\EncodingTypeExtensions.cs" />
     <Compile Include="Encoding\EncodingDetectorFromBom.cs" />
     <Compile Include="Encoding\NumBytesPerUnitAttribute.cs" />
-    <Compile Include="EolConverters\CrEolConverter.cs" />
-    <Compile Include="EolConverters\EolByte.cs" />
-    <Compile Include="EolConverters\EolConverterFactory.cs" />
-    <Compile Include="EolConverters\IEolConverter.cs" />
-    <Compile Include="EolConverters\NullEolConverter.cs" />
+    <Compile Include="ByteCode.cs" />
     <Compile Include="Encoding\EncodingDetector.cs" />
     <Compile Include="EolConversion.cs" />
     <Compile Include="EolDataConverter.cs" />

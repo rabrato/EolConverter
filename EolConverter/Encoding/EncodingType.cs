@@ -1,4 +1,4 @@
-﻿using EolConverter.EolConverters;
+﻿using EolConverter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +24,11 @@ namespace EolConverter.Encoding
         Utf16BE,
 
         [NumBytesPerUnit(4)]
-        [ByteOrderMark(new byte[4] { 0xff, 0xfe, EolByte.Empty, EolByte.Empty })]
+        [ByteOrderMark(new byte[4] { 0xff, 0xfe, ByteCode.Empty, ByteCode.Empty })]
         Utf32LE,
 
         [NumBytesPerUnit(4)]
-        [ByteOrderMark(new byte[4] { EolByte.Empty, EolByte.Empty, 0xfe, 0xff })]
+        [ByteOrderMark(new byte[4] { ByteCode.Empty, ByteCode.Empty, 0xfe, 0xff })]
         Utf32BE
     }
 }

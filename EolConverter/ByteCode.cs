@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EolConverter.EolConverters
+namespace EolConverter
 {
-    public class EolByte
+    public class ByteCode
     {
         public const byte Empty = 0;
         public const byte Cr = 13;

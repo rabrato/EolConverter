@@ -1,4 +1,4 @@
-﻿using EolConverter.EolConverters;
+﻿using EolConverter;
 using System;
 using System.Collections.Generic;
 using System.Linq;

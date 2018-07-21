@@ -1,5 +1,5 @@
 ﻿using EolConverter.Encoding;
-using EolConverter.EolConverters;
+using EolConverter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,22 +17,22 @@ namespace EolConverter
 
         public static bool IsCr(this byte[] unit, EncodingType encoding)
         {
-            return unit.IsChar(EolByte.Cr, encoding);
+            return unit.IsChar(ByteCode.Cr, encoding);
         }
 
         public static bool IsLf(this byte[] unit, EncodingType encoding)
         {
-            return unit.IsChar(EolByte.Lf, encoding);
+            return unit.IsChar(ByteCode.Lf, encoding);
         }
 
         public static void CopyCrAt(this byte[] data, int index, EncodingType encoding)
         {
-            data.CopyCharAt(EolByte.Cr, index, encoding);
+            data.CopyCharAt(ByteCode.Cr, index, encoding);
         }
 
         public static void CopyLfAt(this byte[] data, int index, EncodingType encoding)
         {
-            data.CopyCharAt(EolByte.Lf, index, encoding);
+            data.CopyCharAt(ByteCode.Lf, index, encoding);
         }
 
         public static void CopyUnitAt(this byte[] data, byte[] unit, int index)
@@ -48,11 +48,11 @@ namespace EolConverter
         public static int? FindFirstEnfOfLineByteIndex(this byte[] data)
         {
             // First find if there is any Cr in data
-            int? eolByteIndex = data.FindFirstByteIndex(EolByte.Cr);
+            int? eolByteIndex = data.FindFirstByteIndex(ByteCode.Cr);
             if (eolByteIndex == null)
             {
                 // If no Cr in data then search any Lf
-                eolByteIndex = data.FindFirstByteIndex(EolByte.Lf);
+                eolByteIndex = data.FindFirstByteIndex(ByteCode.Lf);
             }
 
             // Will return null if there isn't any Cr or Lf in data
@@ -83,10 +83,10 @@ namespace EolConverter
             return data.SequenceEqual(character);
         }
 
-        private static byte[] GetCharUnit(byte byteChar, EncodingType encoding)
+        public static byte[] GetCharUnit(byte byteChar, EncodingType encoding)
         {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            var emptyBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => EolByte.Empty);
+            var emptyBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => ByteCode.Empty);
             return emptyBytes.Concat(new[] { byteChar }).ToArray();
         }
     }
