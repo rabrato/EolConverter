@@ -10,14 +10,19 @@ namespace EolConverter
 {
     public static class CharacterUtils
     {
-        public static bool IsCr(this byte[] data, EncodingType encoding)
+        public static bool IsEol(this byte[] unit, EncodingType encoding)
         {
-            return data.IsChar(EolByte.Cr, encoding);
+            return unit.IsCr(encoding) || unit.IsLf(encoding);
         }
 
-        public static bool IsLf(this byte[] data, EncodingType encoding)
+        public static bool IsCr(this byte[] unit, EncodingType encoding)
         {
-            return data.IsChar(EolByte.Lf, encoding);
+            return unit.IsChar(EolByte.Cr, encoding);
+        }
+
+        public static bool IsLf(this byte[] unit, EncodingType encoding)
+        {
+            return unit.IsChar(EolByte.Lf, encoding);
         }
 
         public static void CopyCrAt(this byte[] data, int index, EncodingType encoding)
@@ -30,9 +35,9 @@ namespace EolConverter
             data.CopyCharAt(EolByte.Lf, index, encoding);
         }
 
-        public static void CopyCharAt(this byte[] data, byte[] character, int index)
+        public static void CopyUnitAt(this byte[] data, byte[] unit, int index)
         {
-            character.CopyTo(data, index);
+            unit.CopyTo(data, index);
         }
 
         public static bool HasAnyEndOfLine(this byte[] data)
@@ -63,13 +68,13 @@ namespace EolConverter
 
         private static void CopyCharAt(this byte[] data, byte byteChar, int index, EncodingType encoding)
         {
-            var character = GetChar(byteChar, encoding);
-            data.CopyCharAt(character, index);
+            var charUnit = GetCharUnit(byteChar, encoding);
+            data.CopyUnitAt(charUnit, index);
         }
 
         private static bool IsChar(this byte[] data, byte byteChar, EncodingType encoding)
         {
-            var character = GetChar(byteChar, encoding);
+            var character = GetCharUnit(byteChar, encoding);
             if (data.Length != character.Length)
             {
                 return false;
@@ -78,7 +83,7 @@ namespace EolConverter
             return data.SequenceEqual(character);
         }
 
-        private static byte[] GetChar(byte byteChar, EncodingType encoding)
+        private static byte[] GetCharUnit(byte byteChar, EncodingType encoding)
         {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
             var emptyBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => EolByte.Empty);

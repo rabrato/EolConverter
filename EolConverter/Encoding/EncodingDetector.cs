@@ -18,20 +18,20 @@ namespace EolConverter.Encoding
             detectorFromEol = new EncodingDetectorFromEol();
         }
 
-        public EncodingType GetEncoding(byte[] data, int dataLength)
+        public (EncodingType encoding, bool hasBom) GetEncoding(byte[] data, int dataLength)
         {
             if (data == null || data.Length == 0 || dataLength == 0)
             {
-                return EncodingType.None;
+                return (EncodingType.None, false);
             }
 
             var encoding = detectorFromBom.GetEncodingFromBom(data, dataLength);
             if (encoding != EncodingType.None)
             {
-                return encoding;
+                return (encoding, true);
             }
 
-            return detectorFromEol.GetEncodingFromEolBytes(data, dataLength);
+            return (detectorFromEol.GetEncodingFromEolBytes(data, dataLength), false);
         }
     }
 }
