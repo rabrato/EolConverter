@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EolConverter.Encoding
 {
-    public class EncodingDetector
+    public class EncodingDetector : IEncodingDetector
     {
         private EncodingDetectorFromBom detectorFromBom;
         private EncodingDetectorFromEol detectorFromEol;

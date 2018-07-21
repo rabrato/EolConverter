@@ -11,80 +11,16 @@ namespace EolConverter
 {
     public class EolDataConverter
     {
-        EolConversion eolConversion;
-        EncodingDetector encodingDetector;
+        EolConverter eolConverter;
 
         public EolDataConverter(EolConversion eolConversion)
         {
-            this.eolConversion = eolConversion;
-            encodingDetector = new EncodingDetector();
+            eolConverter = new EolConverter(eolConversion, new EncodingDetector());
         }
 
         public void Convert(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
-            if (data == null || dataLength == 0 || !data.HasAnyEol())
-            {
-                outputData = data;
-                outputLength = dataLength;
-                return;
-            }
-
-            (var encoding, bool hasBom) = encodingDetector.GetEncoding(data, dataLength);
-            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            int initialIndex = hasBom ? encoding.GetByteOrderMark().Length : 0;
-
-            int outputIndex = 0;
-            for (int unitIndex = initialIndex; unitIndex <= dataLength - numBytesPerUnit; unitIndex += numBytesPerUnit)
-            {
-                var currentUnit = GetUnit(data, unitIndex, numBytesPerUnit);
-                var nextUnit = GetUnit(data, unitIndex + numBytesPerUnit, numBytesPerUnit);
-
-                ProcessUnit(outputData, currentUnit, encoding, ref outputIndex);
-
-                if (currentUnit.IsCrUnit(encoding) && nextUnit.IsLfUnit(encoding))
-                {
-                    // If CRLF then the do not process the next LF unit because the end of line has been inserted while processing the CR
-                    unitIndex += numBytesPerUnit;
-                }
-            }
-
-            outputLength = outputIndex;
-        }
-
-        private byte[] GetUnit(byte[] data, int unitIndex, int numBytesPerUnit)
-        {
-            bool canTakeEntireUnit = unitIndex <= data.Length - numBytesPerUnit;
-            int bytesToTake = canTakeEntireUnit ? numBytesPerUnit : data.Length - unitIndex;
-            return data.Skip(unitIndex).Take(bytesToTake).ToArray();
-        }
-
-        private void ProcessUnit(byte[] outputData, byte[] unit, EncodingType encoding, ref int outputIndex)
-        {
-            if (unit.IsEolUnit(encoding))
-            {
-                InsertTargetEol(outputData, encoding, ref outputIndex);
-            }
-            else
-            {
-                CopyUnit(outputData, unit, ref outputIndex);
-            }
-        }
-
-        private void InsertTargetEol(byte[] data, EncodingType encoding, ref int dataIndex)
-        { 
-            byte[] targetEolBytes = eolConversion.GetEolBytes();
-            byte[] targetEolByteUnits = targetEolBytes
-                .Select(eolByte => eolByte.ToByteUnit(encoding))
-                .Aggregate((eolByteUnit1, eolByteUnit2) => eolByteUnit1.Concat(eolByteUnit2).ToArray());
-
-            targetEolByteUnits.CopyTo(data, dataIndex);
-            dataIndex += targetEolByteUnits.Length;
-        }
-
-        private void CopyUnit(byte[] data, byte[] unit, ref int dataIndex)
-        {
-            unit.CopyTo(data, dataIndex);
-            dataIndex += unit.Length;
+            eolConverter.Convert(data, dataLength, outputData, out outputLength);
         }
     }
 }

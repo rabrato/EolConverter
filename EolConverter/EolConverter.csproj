@@ -53,8 +53,10 @@
     <Compile Include="ComponentModel\NumBytesPerUnitAttribute.cs" />
     <Compile Include="ByteUtils\ByteCode.cs" />
     <Compile Include="Encoding\EncodingDetector.cs" />
+    <Compile Include="Encoding\IEncodingDetector.cs" />
     <Compile Include="EolConversion.cs" />
     <Compile Include="EolConversionExtensions.cs" />
+    <Compile Include="EolConverter.cs" />
     <Compile Include="EolDataConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

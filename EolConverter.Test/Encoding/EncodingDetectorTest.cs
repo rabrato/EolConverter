@@ -7,14 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using EolConverter.ByteUtils;
+using EolConverter.Test.TestUtils;
 
 namespace EolConverter.Test.Encoding
 {
     public class EncodingDetectorTest
     {
-        private const byte DummyByte = 100;
-        private const int BufferSize = 1024;
-
         private EncodingDetector sut;
 
         [Theory, MemberData(nameof(BomPerUtfTestData))]
@@ -53,7 +51,7 @@ namespace EolConverter.Test.Encoding
         public void GetEncoding_WhenDataOnlyContainsEol(byte[] eolBytes, EncodingType expectedEncoding)
         {
             // Arrange
-            byte[] data = GetData(initializeWithDummyValues: false);
+            byte[] data = new byte[10];
             eolBytes.CopyTo(data, 0);
 
             CreateSut();
@@ -86,7 +84,7 @@ namespace EolConverter.Test.Encoding
         {
             // Arrange
             byte[] data = GetData();
-            eolBytes.CopyTo(data, BufferSize / 2);
+            eolBytes.CopyTo(data, data.Length / 2);
 
             CreateSut();
 
@@ -102,7 +100,7 @@ namespace EolConverter.Test.Encoding
         {
             // Arrange
             byte[] data = GetData();
-            eolBytes.CopyTo(data, BufferSize - eolBytes.Length);
+            eolBytes.CopyTo(data, data.Length - eolBytes.Length);
 
             CreateSut();
 
@@ -117,9 +115,10 @@ namespace EolConverter.Test.Encoding
         public void GetEncoding_WhenDataEndsByEolButDataIsNotCompletelyFilled(byte[] eolBytes, EncodingType expectedEncoding)
         {
             // Arrange
-            byte[] data = GetData(initializeWithDummyValues: false);
-            int dataLength = 10 * expectedEncoding.GetNumBytesPerUnit();
-            FillDataWithDummyValues(data, dataLength);
+            int bufferLength = 10 * expectedEncoding.GetNumBytesPerUnit();
+            byte[] data = new byte[bufferLength];
+            int dataLength = bufferLength / 2;
+            data.FillDataWithDummyValues(dataLength);
             eolBytes.CopyTo(data, dataLength - eolBytes.Length);
 
             CreateSut();
@@ -188,7 +187,7 @@ namespace EolConverter.Test.Encoding
         public void GetEncoding_WhenDataLengthIsZero()
         {
             // Arrange
-            byte[] data = GetData(initializeWithDummyValues: false);
+            byte[] data = new byte[100];
             CreateSut();
 
             // Act
@@ -216,11 +215,11 @@ namespace EolConverter.Test.Encoding
         public void GetEncoding_WhenDataIsNotFilledButDataLengthIsNotZero()
         {
             // Arrange
-            byte[] data = GetData(initializeWithDummyValues: false);
+            byte[] data = new byte[100];
             CreateSut();
 
             // Act
-            var encoding = sut.GetEncoding(data, dataLength: BufferSize).encoding;
+            var encoding = sut.GetEncoding(data, dataLength: 10).encoding;
 
             // Assert
             Assert.Equal(EncodingType.None, encoding);
@@ -270,32 +269,9 @@ namespace EolConverter.Test.Encoding
             new object[] { new byte[8] { ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Cr, ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Lf }, EncodingType.Utf32BE },
         };
 
-        private byte[] GetData(bool initializeWithDummyValues = true)
+        private byte[] GetData()
         {
-            byte[] data = new byte[BufferSize];
-            if (initializeWithDummyValues)
-            {
-                FillDataWithDummyValues(data, BufferSize);
-            }
-
-            return data;
-        }
-
-        private void FillDataWithDummyValues(byte[] data, int dataLength)
-        {
-            for (int i = 0; i < dataLength; i++)
-            {
-                data[i] = DummyByte;
-            }
-        }
-
-        private byte[] GetSurroundedByZeros(byte[] data, EncodingType encoding)
-        {
-            int numSurroundingZeros = encoding.GetNumBytesPerUnit() - 1;
-            byte[] dataZeroSurrounded = new byte[numSurroundingZeros + data.Length];
-            int copyAtIndex = encoding.IsBigEndian() ? 0 : numSurroundingZeros;
-            data.CopyTo(dataZeroSurrounded, copyAtIndex);
-            return dataZeroSurrounded;
+            return DummyByteDataProvider.GetDummyData();
         }
 
         private void CreateSut()
