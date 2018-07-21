@@ -28,34 +28,37 @@ namespace EolConverter.EolConverters
             var encoding = encodingDetector.GetEncoding(data, dataLength);
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
 
+            int bomLength = encoding.GetByteOrderMark().Length;
             int outputIndex = 0;
-            for (int dataIndex = 0; dataIndex < dataLength - numBytesPerUnit; dataIndex += numBytesPerUnit)
+            int lastUnitIndex = dataLength - numBytesPerUnit;
+            for (int unitIndex = bomLength; unitIndex <= lastUnitIndex; unitIndex += numBytesPerUnit)
             {
-                var currentChar = data.Skip(dataIndex).Take(numBytesPerUnit).ToArray();
-                var nextChar = data.Skip(dataIndex + numBytesPerUnit).Take(numBytesPerUnit).ToArray();
+                var currentUnit = data.Skip(unitIndex).Take(numBytesPerUnit).ToArray();
+                int nextUnitIndex = unitIndex + numBytesPerUnit;
+                var nextUnit = nextUnitIndex <= lastUnitIndex ? 
+                    data.Skip(nextUnitIndex).Take(numBytesPerUnit).ToArray()
+                    : null;
 
-                if (currentChar.IsCr(encoding) && nextChar.IsLf(encoding))
+                if (currentUnit.IsCr(encoding) && nextUnit?.IsLf(encoding) == true)
                 {
                     outputData.CopyCrAt(outputIndex, encoding);
-                    dataIndex += numBytesPerUnit;
+                    unitIndex += numBytesPerUnit;
                 }
-                else if (currentChar.IsCr(encoding))
+                else if (currentUnit.IsCr(encoding))
                 {
                     // do nothing
                 }
-                else if (currentChar.IsLf(encoding))
+                else if (currentUnit.IsLf(encoding))
                 {
                     outputData.CopyCrAt(outputIndex, encoding);
                 }
                 else
                 {
-                    outputData.CopyCharAt(currentChar, outputIndex);
+                    outputData.CopyCharAt(currentUnit, outputIndex);
                 }
 
                 outputIndex += numBytesPerUnit;
             }
-
-            // CHECK LAST CHAR
 
             outputLength = outputIndex;
         }

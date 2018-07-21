@@ -9,84 +9,116 @@ namespace EolConverter.Encoding
 {
     internal class EncodingDetectorFromEol
     {
+        private Dictionary<EncodingType, Func<byte[], int, int, bool>> encodingsToCheckOrdered;
+
+        public EncodingDetectorFromEol()
+        {
+            encodingsToCheckOrdered = new Dictionary<EncodingType, Func<byte[], int, int, bool>>()
+            {
+                [EncodingType.Utf32BE] = IsUtf32BE,
+                [EncodingType.Utf32LE] = IsUtf32LE,
+                [EncodingType.Utf16BE] = IsUtf16BE,
+                [EncodingType.Utf16LE] = IsUtf16LE,
+                [EncodingType.Utf8] = IsUtf8,
+            };
+        }
+
         internal EncodingType GetEncodingFromEolBytes(byte[] data, int dataLength)
         {
             int? eolIndex = data.FindFirstEnfOfLineByteIndex();
-
             if (eolIndex == null)
             {
                 // If there are not eol bytes then the encoding is not needed because the file will not need eol replacement.
                 return EncodingType.None;
             }
 
-            var utf32Encoding = GetUtf32Encoding(data, eolIndex.Value, dataLength);
-            if (utf32Encoding != EncodingType.None)
+            foreach (var encodingToCheck in encodingsToCheckOrdered)
             {
-                return utf32Encoding;
-            }
-
-            var utf16Encoding = GetUtf16Encoding(data, eolIndex.Value, dataLength);
-            if (utf16Encoding != EncodingType.None)
-            {
-                return utf16Encoding;
-            }
-
-            if (IstUtf8Encoding(data, eolIndex.Value, dataLength))
-            {
-                return EncodingType.Utf8;
+                var encoding = encodingToCheck.Key;
+                var checkEncodingFunction = encodingToCheck.Value;
+                if (checkEncodingFunction(data, dataLength, eolIndex.Value))
+                {
+                    return encoding;
+                }
             }
 
             return EncodingType.None;
         }
 
-        private EncodingType GetUtf32Encoding(byte[] data, int eolIndex, int dataLength)
+        private bool IsUtf32LE(byte[] data, int dataLength, int eolIndex)
         {
-            return GetMultipleByteEncoding(data, eolIndex, dataLength, EncodingType.Utf32LE, EncodingType.Utf32BE);
+            return IsLittleEndianMultipleByteEncoding(data, dataLength, eolIndex, EncodingType.Utf32LE);
         }
 
-        private EncodingType GetUtf16Encoding(byte[] data, int eolIndex, int dataLength)
+        private bool IsUtf32BE(byte[] data, int dataLength, int eolIndex)
         {
-            return GetMultipleByteEncoding(data, eolIndex, dataLength, EncodingType.Utf16LE, EncodingType.Utf16BE);
+            return IsBigEndianMultipleByteEncoding(data, dataLength, eolIndex, EncodingType.Utf32BE);
         }
 
-        private EncodingType GetMultipleByteEncoding(byte[] data, int eolIndex,
-            int dataLength, EncodingType leEncoding, EncodingType beEncoding)
+        private bool IsUtf16LE(byte[] data, int dataLength, int eolIndex)
         {
-            int numBytesPerUnit = leEncoding.GetNumBytesPerUnit();
+            return IsLittleEndianMultipleByteEncoding(data, dataLength, eolIndex, EncodingType.Utf16LE);
+        }
 
+        private bool IsUtf16BE(byte[] data, int dataLength, int eolIndex)
+        {
+            return IsBigEndianMultipleByteEncoding(data, dataLength, eolIndex, EncodingType.Utf16BE);
+        }
+
+        private bool IsUtf8(byte[] data, int dataLength, int eolIndex)
+        {
+            // If there is any 0 within the data then can't be utf-8
+            if (data.Take(dataLength).Any(b => b == EolByte.Empty))
+            {
+                return false;
+            }
+
+            // Check eol is not sorrounded by zero bytes, checking also corner cases (eol is first or last bytes)
+            if ((eolIndex == 0 || data[eolIndex - 1] != EolByte.Empty)
+                && (eolIndex == dataLength - 1 || data[eolIndex + 1] != EolByte.Empty))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsLittleEndianMultipleByteEncoding(byte[] data, int dataLength, int eolIndex, EncodingType encoding)
+        {
+            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
             // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
             if (ContainsZeroBytesUnit(data, dataLength, numBytesPerUnit))
             {
-                return EncodingType.None;
+                return false;
             }
 
             int numZeros = numBytesPerUnit - 1;
-
-            bool isPrecededByZeros = IsPrecededByZeros(data, eolIndex, numZeros);
-            bool isFollowedByZeros = IsFollowedByZeros(data, eolIndex, numZeros, dataLength);
-
-            bool isLastByteInUnit = eolIndex % numBytesPerUnit == numBytesPerUnit - 1;
+            bool isFollowedByZeros = IsFollowedByZeros(data, dataLength, eolIndex, numZeros);
             bool isFirstByteInUnit = eolIndex % numBytesPerUnit == 0;
-
-            if (isFirstByteInUnit && isFollowedByZeros)
-            {
-                return leEncoding;
-            }
-
-            if (isLastByteInUnit && isPrecededByZeros)
-            {
-                return beEncoding;
-            }
-
-            return EncodingType.None;
+            return isFirstByteInUnit && isFollowedByZeros;
         }
 
+        private bool IsBigEndianMultipleByteEncoding(byte[] data, int dataLength, int eolIndex, EncodingType encoding)
+        {
+            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
+            // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
+            if (ContainsZeroBytesUnit(data, dataLength, numBytesPerUnit))
+            {
+                return false;
+            }
+
+            int numZeros = numBytesPerUnit - 1;
+            bool isPrecededByZeros = IsPrecededByZeros(data, eolIndex, numZeros);
+            bool isLastByteInUnit = eolIndex % numBytesPerUnit == numBytesPerUnit - 1;
+            return isLastByteInUnit && isPrecededByZeros;
+        }
+        
         private bool ContainsZeroBytesUnit(byte[] data, int dataLength, int numBytesPerUnit)
         {
             var zeroBytesUnit = new byte[numBytesPerUnit];
             for (int i = 0; i < dataLength - numBytesPerUnit; i++)
             {
-                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == EolByte.Zero))
+                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == EolByte.Empty))
                 {
                     return true;
                 }
@@ -104,7 +136,7 @@ namespace EolConverter.Encoding
 
             for (int i = 1; i <= numZeros; i++)
             {
-                if (data[byteIndex - i] != EolByte.Zero)
+                if (data[byteIndex - i] != EolByte.Empty)
                 {
                     return false;
                 }
@@ -113,7 +145,7 @@ namespace EolConverter.Encoding
             return true;
         }
 
-        private bool IsFollowedByZeros(byte[] data, int byteIndex, int numZeros, int dataLength)
+        private bool IsFollowedByZeros(byte[] data, int dataLength, int byteIndex, int numZeros)
         {
             if (byteIndex + numZeros >= dataLength)
             {
@@ -122,31 +154,13 @@ namespace EolConverter.Encoding
 
             for (int i = numZeros; i > 0; i--)
             {
-                if (data[byteIndex + i] != EolByte.Zero)
+                if (data[byteIndex + i] != EolByte.Empty)
                 {
                     return false;
                 }
             }
 
             return true;
-        }
-
-        private bool IstUtf8Encoding(byte[] data, int eolIndex, int dataLength)
-        {
-            // If there is any 0 within the data then can't be utf-8
-            if (data.Take(dataLength).Any(b => b == EolByte.Zero))
-            {
-                return false;
-            }
-
-            // Check eol is not sorrounded by zero bytes, checking also corner cases (eol is first or last bytes)
-            if ((eolIndex == 0 || data[eolIndex - 1] != EolByte.Zero)
-                && (eolIndex == dataLength - 1 || data[eolIndex + 1] != EolByte.Zero))
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

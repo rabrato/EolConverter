@@ -81,7 +81,7 @@ namespace EolConverter
         private static byte[] GetChar(byte byteChar, EncodingType encoding)
         {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            var emptyBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => EolByte.Zero);
+            var emptyBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => EolByte.Empty);
             return emptyBytes.Concat(new[] { byteChar }).ToArray();
         }
     }

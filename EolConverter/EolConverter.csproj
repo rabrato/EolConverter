@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterUtils.cs" />
+    <Compile Include="Encoding\ByteOrderMarkAttribute.cs" />
     <Compile Include="Encoding\EncodingDetectorFromEol.cs" />
     <Compile Include="Encoding\EncodingType.cs" />
     <Compile Include="Encoding\EncodingTypeExtensions.cs" />

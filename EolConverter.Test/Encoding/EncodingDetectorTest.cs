@@ -228,29 +228,29 @@ namespace EolConverter.Test.Encoding
             new object[] { new byte[3] { 0xef, 0xbb, 0xbf }, EncodingType.Utf8 },
             new object[] { new byte[2] { 0xff, 0xfe }, EncodingType.Utf16LE },
             new object[] { new byte[2] { 0xfe, 0xff }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { 0xff, 0xfe, EolByte.Zero, EolByte.Zero }, EncodingType.Utf32LE },
-            new object[] { new byte[4] { EolByte.Zero, EolByte.Zero, 0xfe, 0xff }, EncodingType.Utf32BE },
+            new object[] { new byte[4] { 0xff, 0xfe, EolByte.Empty, EolByte.Empty }, EncodingType.Utf32LE },
+            new object[] { new byte[4] { EolByte.Empty, EolByte.Empty, 0xfe, 0xff }, EncodingType.Utf32BE },
         };
 
         public static IEnumerable<object[]> EolPerUtfTestData => new List<object[]>
         {
             new object[] { new byte[1] { EolByte.Cr}, EncodingType.Utf8 },
-            new object[] { new byte[2] { EolByte.Cr, EolByte.Zero}, EncodingType.Utf16LE },
-            new object[] { new byte[4] { EolByte.Cr, EolByte.Zero, EolByte.Zero, EolByte.Zero }, EncodingType.Utf32LE },
-            new object[] { new byte[2] { EolByte.Zero, EolByte.Cr }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { EolByte.Zero, EolByte.Zero, EolByte.Zero, EolByte.Cr }, EncodingType.Utf32BE },
+            new object[] { new byte[2] { EolByte.Cr, EolByte.Empty}, EncodingType.Utf16LE },
+            new object[] { new byte[4] { EolByte.Cr, EolByte.Empty, EolByte.Empty, EolByte.Empty }, EncodingType.Utf32LE },
+            new object[] { new byte[2] { EolByte.Empty, EolByte.Cr }, EncodingType.Utf16BE },
+            new object[] { new byte[4] { EolByte.Empty, EolByte.Empty, EolByte.Empty, EolByte.Cr }, EncodingType.Utf32BE },
 
             new object[] { new byte[1] { EolByte.Lf}, EncodingType.Utf8 },
-            new object[] { new byte[2] { EolByte.Lf, EolByte.Zero}, EncodingType.Utf16LE },
-            new object[] { new byte[4] { EolByte.Lf, EolByte.Zero, EolByte.Zero, EolByte.Zero }, EncodingType.Utf32LE },
-            new object[] { new byte[2] { EolByte.Zero, EolByte.Lf }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { EolByte.Zero, EolByte.Zero, EolByte.Zero, EolByte.Lf }, EncodingType.Utf32BE },
+            new object[] { new byte[2] { EolByte.Lf, EolByte.Empty}, EncodingType.Utf16LE },
+            new object[] { new byte[4] { EolByte.Lf, EolByte.Empty, EolByte.Empty, EolByte.Empty }, EncodingType.Utf32LE },
+            new object[] { new byte[2] { EolByte.Empty, EolByte.Lf }, EncodingType.Utf16BE },
+            new object[] { new byte[4] { EolByte.Empty, EolByte.Empty, EolByte.Empty, EolByte.Lf }, EncodingType.Utf32BE },
 
             new object[] { new byte[2] { EolByte.Cr, EolByte.Lf }, EncodingType.Utf8},
-            new object[] { new byte[4] { EolByte.Cr, EolByte.Zero, EolByte.Lf, EolByte.Zero }, EncodingType.Utf16LE },
-            new object[] { new byte[8] { EolByte.Cr, EolByte.Zero, EolByte.Zero, EolByte.Zero, EolByte.Lf, EolByte.Zero, EolByte.Zero, EolByte.Zero }, EncodingType.Utf32LE },
-            new object[] { new byte[4] { EolByte.Zero, EolByte.Cr, EolByte.Zero, EolByte.Lf }, EncodingType.Utf16BE },
-            new object[] { new byte[8] { EolByte.Zero, EolByte.Zero, EolByte.Zero, EolByte.Cr, EolByte.Zero, EolByte.Zero, EolByte.Zero, EolByte.Lf }, EncodingType.Utf32BE },
+            new object[] { new byte[4] { EolByte.Cr, EolByte.Empty, EolByte.Lf, EolByte.Empty }, EncodingType.Utf16LE },
+            new object[] { new byte[8] { EolByte.Cr, EolByte.Empty, EolByte.Empty, EolByte.Empty, EolByte.Lf, EolByte.Empty, EolByte.Empty, EolByte.Empty }, EncodingType.Utf32LE },
+            new object[] { new byte[4] { EolByte.Empty, EolByte.Cr, EolByte.Empty, EolByte.Lf }, EncodingType.Utf16BE },
+            new object[] { new byte[8] { EolByte.Empty, EolByte.Empty, EolByte.Empty, EolByte.Cr, EolByte.Empty, EolByte.Empty, EolByte.Empty, EolByte.Lf }, EncodingType.Utf32BE },
         };
 
         private byte[] GetData(bool initializeWithDummyValues = false)

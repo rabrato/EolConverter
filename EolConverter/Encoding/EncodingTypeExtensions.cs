@@ -19,6 +19,12 @@ namespace EolConverter.Encoding
             return attribute?.NumBytesPerUnit ?? 0;
         }
 
+        public static byte[] GetByteOrderMark(this EncodingType encoding)
+        {
+            var attribute = encoding.GetAttribute<ByteOrderMarkAttribute>();
+            return attribute?.ByteOrderMark ?? new byte[0];
+        }
+
         private static T GetAttribute<T>(this EncodingType encoding)
             where T : Attribute
         {

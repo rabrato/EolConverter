@@ -8,7 +8,7 @@ namespace EolConverter.EolConverters
 {
     public class EolByte
     {
-        public const byte Zero = 0;
+        public const byte Empty = 0;
         public const byte Cr = 13;
         public const byte Lf = 10;
     }
