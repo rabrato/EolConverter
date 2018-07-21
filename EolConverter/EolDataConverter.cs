@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EolConverter.ByteUtils;
 
 namespace EolConverter
 {
@@ -71,7 +72,7 @@ namespace EolConverter
 
         private void InsertTargetEol(byte[] data, EncodingType encoding, ref int dataIndex)
         { 
-            byte[] targetEolChars = new byte[0];
+            byte[] targetEolChars = eolConversion.GetEolBytes();
             byte[] targetEolUnits = targetEolChars
                 .Select(eolChar => CharacterUtils.GetCharUnit(eolChar, encoding))
                 .Aggregate((eolUnit1, eolUnit2) => eolUnit1.Concat(eolUnit2).ToArray());

@@ -41,16 +41,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CharacterUtils.cs" />
-    <Compile Include="Encoding\ByteOrderMarkAttribute.cs" />
+    <Compile Include="ComponentModel\EolBytesAttribute.cs" />
+    <Compile Include="ByteUtils\CharacterUtils.cs" />
+    <Compile Include="ComponentModel\ByteOrderMarkAttribute.cs" />
+    <Compile Include="ComponentModel\EnumExtensions.cs" />
     <Compile Include="Encoding\EncodingDetectorFromEol.cs" />
     <Compile Include="Encoding\EncodingType.cs" />
     <Compile Include="Encoding\EncodingTypeExtensions.cs" />
     <Compile Include="Encoding\EncodingDetectorFromBom.cs" />
-    <Compile Include="Encoding\NumBytesPerUnitAttribute.cs" />
-    <Compile Include="ByteCode.cs" />
+    <Compile Include="ComponentModel\NumBytesPerUnitAttribute.cs" />
+    <Compile Include="ByteUtils\ByteCode.cs" />
     <Compile Include="Encoding\EncodingDetector.cs" />
     <Compile Include="EolConversion.cs" />
+    <Compile Include="EolConversionExtensions.cs" />
     <Compile Include="EolDataConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EolConverter.Encoding
+namespace EolConverter.ComponentModel
 {
     public class ByteOrderMarkAttribute : Attribute
     {
         public byte[] ByteOrderMark { get; set; }
 
-        public ByteOrderMarkAttribute(byte[] byteOrderMark)
+        public ByteOrderMarkAttribute(params byte[] byteOrderMark)
         {
             ByteOrderMark = byteOrderMark;
         }

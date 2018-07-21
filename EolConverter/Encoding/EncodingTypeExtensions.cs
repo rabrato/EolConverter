@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EolConverter.ComponentModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,15 +24,6 @@ namespace EolConverter.Encoding
         {
             var attribute = encoding.GetAttribute<ByteOrderMarkAttribute>();
             return attribute?.ByteOrderMark ?? new byte[0];
-        }
-
-        private static T GetAttribute<T>(this EncodingType encoding)
-            where T : Attribute
-        {
-            var type = encoding.GetType();
-            var memInfo = type.GetMember(encoding.ToString());
-            var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
-            return ((T)attributes[0]);
         }
     }
 }
