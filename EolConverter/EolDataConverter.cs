@@ -22,7 +22,7 @@ namespace EolConverter
 
         public void Convert(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
-            if (data == null || dataLength == 0 || !data.HasAnyEndOfLine())
+            if (data == null || dataLength == 0 || !data.HasAnyEol())
             {
                 outputData = data;
                 outputLength = dataLength;
@@ -41,7 +41,7 @@ namespace EolConverter
 
                 ProcessUnit(outputData, currentUnit, encoding, ref outputIndex);
 
-                if (currentUnit.IsCr(encoding) && nextUnit.IsLf(encoding))
+                if (currentUnit.IsCrUnit(encoding) && nextUnit.IsLfUnit(encoding))
                 {
                     // If CRLF then the do not process the next LF unit because the end of line has been inserted while processing the CR
                     unitIndex += numBytesPerUnit;
@@ -60,7 +60,7 @@ namespace EolConverter
 
         private void ProcessUnit(byte[] outputData, byte[] unit, EncodingType encoding, ref int outputIndex)
         {
-            if (unit.IsEol(encoding))
+            if (unit.IsEolUnit(encoding))
             {
                 InsertTargetEol(outputData, encoding, ref outputIndex);
             }
@@ -72,18 +72,18 @@ namespace EolConverter
 
         private void InsertTargetEol(byte[] data, EncodingType encoding, ref int dataIndex)
         { 
-            byte[] targetEolChars = eolConversion.GetEolBytes();
-            byte[] targetEolUnits = targetEolChars
-                .Select(eolChar => CharacterUtils.GetCharUnit(eolChar, encoding))
-                .Aggregate((eolUnit1, eolUnit2) => eolUnit1.Concat(eolUnit2).ToArray());
+            byte[] targetEolBytes = eolConversion.GetEolBytes();
+            byte[] targetEolByteUnits = targetEolBytes
+                .Select(eolByte => eolByte.ToByteUnit(encoding))
+                .Aggregate((eolByteUnit1, eolByteUnit2) => eolByteUnit1.Concat(eolByteUnit2).ToArray());
 
-            data.CopyUnitAt(targetEolUnits, dataIndex);
-            dataIndex += targetEolUnits.Length;
+            targetEolByteUnits.CopyTo(data, dataIndex);
+            dataIndex += targetEolByteUnits.Length;
         }
 
         private void CopyUnit(byte[] data, byte[] unit, ref int dataIndex)
         {
-            data.CopyUnitAt(unit, dataIndex);
+            unit.CopyTo(data, dataIndex);
             dataIndex += unit.Length;
         }
     }

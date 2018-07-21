@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteUtils\ByteUnitUtils.cs" />
     <Compile Include="ComponentModel\EolBytesAttribute.cs" />
-    <Compile Include="ByteUtils\CharacterUtils.cs" />
+    <Compile Include="ByteUtils\EolUtils.cs" />
     <Compile Include="ComponentModel\ByteOrderMarkAttribute.cs" />
     <Compile Include="ComponentModel\EnumExtensions.cs" />
     <Compile Include="Encoding\EncodingDetectorFromEol.cs" />

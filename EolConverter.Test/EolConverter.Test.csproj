@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Encoding\EncodingDetectorTest.cs" />
+    <Compile Include="EolDataConverterIntegrationTest.cs" />
     <Compile Include="EolDataConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils\AutoMoqDataAttribute.cs" />

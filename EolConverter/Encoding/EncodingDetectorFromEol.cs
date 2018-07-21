@@ -25,7 +25,7 @@ namespace EolConverter.Encoding
 
         internal EncodingType GetEncodingFromEolBytes(byte[] data, int dataLength)
         {
-            int? eolIndex = data.FindFirstEnfOfLineByteIndex();
+            int? eolIndex = data.FindFirstEolByteIndex();
             if (eolIndex == null)
             {
                 // If there are not eol bytes then the encoding is not needed because the file will not need eol replacement.
