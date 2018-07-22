@@ -171,6 +171,21 @@ namespace EolConverter.Test.Encoding
         }
 
         [Fact]
+        public void GetEncoding_WhenDataContainsOneByteEolButThereIsAnyZeroByteWithinData_ThenEncoding()
+        {
+            // Arrange
+            byte[] data = new byte[5] { 1, 0, 1, ByteCode.Cr, 1 };
+
+            CreateSut();
+
+            // Act
+            var encoding = sut.GetEncoding(data, data.Length).encoding;
+
+            // Assert
+            Assert.Equal(EncodingType.None, encoding);
+        }
+
+        [Fact]
         public void GetEncoding_WhenDataIsNull()
         {
             // Arrange

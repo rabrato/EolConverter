@@ -56,7 +56,7 @@ namespace EolConverter
         private void CopyInputDataToOutput(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
             int outputIndex = 0;
-            CopyDataToOutput(data, outputData, ref outputIndex);
+            CopyDataToOutput(data.Take(dataLength).ToArray(), outputData, ref outputIndex);
             outputLength = outputIndex;
         }
 
