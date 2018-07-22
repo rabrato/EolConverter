@@ -16,13 +16,6 @@ namespace EolConverter
             this.encodingDetector = encodingDetector;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="dataLength"></param>
-        /// <param name="outputData"></param>
-        /// <param name="outputLength"></param>
         public void Convert(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
             if (outputData == null)
@@ -62,24 +55,22 @@ namespace EolConverter
 
         private void Convert(byte[] data, int dataLength, EncodingType encoding, bool hasBom, byte[] outputData, out int outputLength)
         {
-            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            var targetEolUnits = eolConversion.GetEolUnits(encoding);
-
             int outputIndex = 0;
             if (hasBom)
             {
                 CopyBomTo(outputData, encoding, out outputIndex);
             }
 
+            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
             int startDataIndex = outputIndex;
             for (int dataIndex = startDataIndex; dataIndex <= dataLength - numBytesPerUnit; dataIndex += numBytesPerUnit)
             {
                 var currentUnit = GetUnit(data, dataIndex, numBytesPerUnit);
                 var nextUnit = GetUnit(data, dataIndex + numBytesPerUnit, numBytesPerUnit);
 
-                ProcessUnit(outputData, currentUnit, targetEolUnits, encoding, ref outputIndex);
+                ProcessUnit(outputData, currentUnit, encoding, ref outputIndex);
 
-                if (currentUnit.IsCRUnit(encoding) && nextUnit.IsLFUnit(encoding))
+                if (currentUnit.IsCR(encoding) && nextUnit.IsLF(encoding))
                 {
                     // If CRLF then the do not process the next LF unit because the end of line has been inserted while processing the CR
                     dataIndex += numBytesPerUnit;
@@ -103,9 +94,11 @@ namespace EolConverter
             return data.Skip(unitIndex).Take(bytesToTake).ToArray();
         }
 
-        private void ProcessUnit(byte[] outputData, byte[] unit, byte[] targetEolUnits, EncodingType encoding, ref int outputIndex)
+        private void ProcessUnit(byte[] outputData, byte[] unit, EncodingType encoding, ref int outputIndex)
         {
-            byte[] unitToCopy = unit.IsEolUnit(encoding) ? targetEolUnits : unit;
+            var newEol = eolConversion.GetEolUnits(encoding);
+            // If unit is an eol then copy the new eol (make the eol conversion), otherwise just copy the source data
+            byte[] unitToCopy = unit.IsEol(encoding) ? newEol : unit;
             CopyDataToOutput(unitToCopy, outputData, ref outputIndex);
         }
 

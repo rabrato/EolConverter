@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EolConverter.Test
 {
-    public class EolDataConverterIntegrationTest
+    public class EolDataConverterFunctionalTest
     {
         const int BlockSize = 1024;
 

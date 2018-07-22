@@ -5,17 +5,17 @@ namespace EolConverter.ByteUtils
 {
     public static class ByteUnitUtils
     {
-        public static bool IsEolUnit(this byte[] unit, EncodingType encoding)
+        public static bool IsEol(this byte[] unit, EncodingType encoding)
         {
-            return unit.IsCRUnit(encoding) || unit.IsLFUnit(encoding);
+            return unit.IsCR(encoding) || unit.IsLF(encoding);
         }
 
-        public static bool IsCRUnit(this byte[] unit, EncodingType encoding)
+        public static bool IsCR(this byte[] unit, EncodingType encoding)
         {
             return unit.IsCharUnit(ByteCode.CR, encoding);
         }
 
-        public static bool IsLFUnit(this byte[] unit, EncodingType encoding)
+        public static bool IsLF(this byte[] unit, EncodingType encoding)
         {
             return unit.IsCharUnit(ByteCode.LF, encoding);
         }
@@ -29,8 +29,8 @@ namespace EolConverter.ByteUtils
 
         private static byte[] ToUnit(this byte byteChar, EncodingType encoding)
         {
-            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            var nullBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => ByteCode.Null);
+            var nullBytes = Enumerable.Range(0, encoding.GetNumBytesPerUnit() - 1)
+                .Select(i => ByteCode.Null);
             var byteCharArray = new byte[1] { byteChar };
             if (encoding.IsBigEndian())
             {
