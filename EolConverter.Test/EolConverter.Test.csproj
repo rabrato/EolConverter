@@ -89,6 +89,7 @@
     <Compile Include="EolConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils\DummyByteDataProvider.cs" />
+    <Compile Include="TestUtils\EolConversionTestScenarios.cs" />
     <Compile Include="TestUtils\IEncodingDetectorMockBuilder.cs" />
   </ItemGroup>
   <ItemGroup>

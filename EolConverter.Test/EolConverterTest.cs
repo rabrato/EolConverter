@@ -15,30 +15,10 @@ namespace EolConverter.Test
     {
         private const int BufferSize = 1024;
 
-        private static byte[] data = new byte[11] { 1, ByteCode.Cr, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataCrConverted = new byte[10] { 1, ByteCode.Cr, 1, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Cr, 1, ByteCode.Cr, 1 };
-        private static byte[] dataLfConverted = new byte[10] { 1, ByteCode.Lf, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Lf, 1, ByteCode.Lf, 1 };
-        private static byte[] dataCrLfConverted = new byte[15] { 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-
-        private static byte[] dataStartByCr = new byte[11] { ByteCode.Cr, 1, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataStartByLf = new byte[11] { ByteCode.Lf, 1, 1, ByteCode.Cr, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataStartByCrLf = new byte[12] { ByteCode.Cr, ByteCode.Lf, 1, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataStartCrConverted = new byte[10] { ByteCode.Cr, 1, 1, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Cr, 1, ByteCode.Cr, 1 };
-        private static byte[] dataStartLfConverted = new byte[10] { ByteCode.Lf, 1, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Lf, 1, ByteCode.Lf, 1 };
-        private static byte[] dataStartCrLfConverted = new byte[15] { ByteCode.Cr, ByteCode.Lf, 1, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-
-        private static byte[] dataEndByCr = new byte[10] { 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr };
-        private static byte[] dataEndByLf = new byte[10] { 1, ByteCode.Cr, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Lf };
-        private static byte[] dataEndByCrLf = new byte[11] { 1, ByteCode.Cr, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf };
-        private static byte[] dataEndCrConverted = new byte[9] { 1, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Cr, 1, ByteCode.Cr, 1, ByteCode.Cr };
-        private static byte[] dataEndLfConverted = new byte[9] { 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Lf, 1, ByteCode.Lf, 1, ByteCode.Lf };
-        private static byte[] dataEndCrLfConverted = new byte[14] { 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf };
-
         byte[] outputData = new byte[BufferSize];
         int outputLength;
 
         Mock<IEncodingDetector> encodingDetectorMock;
-
         EolConverter sut;
 
         [Theory, MemberData(nameof(TestScenarios))]
@@ -51,72 +31,138 @@ namespace EolConverter.Test
             sut.Convert(data, data.Length, outputData, out outputLength);
 
             // Assert
-            Assert.Equal(expectedOutput.Length, outputLength);
-            Assert.Equal(expectedOutput, outputData.Take(outputLength));
+            AssertOutput(expectedOutput, expectedOutput.Length, outputData, outputLength);
         }
 
-        public static IEnumerable<object[]> TestScenarios => 
-            EncodingsToTest.SelectMany(encoding =>
-                DataScenarios.SelectMany(dataScenario => 
-                    CreateTestScenario(encoding, dataScenario.input, dataScenario.conversion, dataScenario.output)
-                )
-            );
-
-        private static IEnumerable<EncodingType> EncodingsToTest => new List<EncodingType>()
-            {
-                EncodingType.Utf8,
-                EncodingType.Utf16BE,
-                EncodingType.Utf16LE,
-                EncodingType.Utf32BE,
-                EncodingType.Utf32LE,
-            };
-
-        private static IEnumerable<(byte[] input, EolConversion conversion, byte[] output)> DataScenarios => 
-            new List<(byte[], EolConversion, byte[])>
+        [Theory, MemberData(nameof(TestScenarios))]
+        public void Convert_WhenDataIsEndedByZeros(EncodingType encoding, bool hasBom, byte[] data, EolConversion conversion, byte[] expectedOutput)
         {
-            (data, EolConversion.CR, dataCrConverted),
-            (data, EolConversion.LF, dataLfConverted),
-            (data, EolConversion.CRLF, dataCrLfConverted),
+            // Arrange
+            var dataZeroEnded = new byte[BufferSize];
+            data.CopyTo(dataZeroEnded, 0);
+            SetupSut(conversion, encoding, hasBom);
 
-            (dataStartByCr, EolConversion.CR, dataStartCrConverted),
-            (dataStartByLf, EolConversion.CR, dataStartCrConverted),
-            (dataStartByCrLf, EolConversion.CR, dataStartCrConverted),
+            // Act
+            sut.Convert(data, data.Length, outputData, out outputLength);
 
-            (dataStartByCr, EolConversion.LF, dataStartLfConverted),
-            (dataStartByLf, EolConversion.LF, dataStartLfConverted),
-            (dataStartByCrLf, EolConversion.LF, dataStartLfConverted),
-
-            (dataStartByCr, EolConversion.CRLF, dataStartCrLfConverted),
-            (dataStartByLf, EolConversion.CRLF, dataStartCrLfConverted),
-            (dataStartByCrLf, EolConversion.CRLF, dataStartCrLfConverted),
-
-            (dataEndByCr, EolConversion.CR, dataEndCrConverted),
-            (dataEndByLf, EolConversion.CR, dataEndCrConverted),
-            (dataEndByCrLf, EolConversion.CR, dataEndCrConverted),
-                 
-            (dataEndByCr, EolConversion.LF, dataEndLfConverted),
-            (dataEndByLf, EolConversion.LF, dataEndLfConverted),
-            (dataEndByCrLf, EolConversion.LF, dataEndLfConverted),
-                 
-            (dataEndByCr, EolConversion.CRLF, dataEndCrLfConverted),
-            (dataEndByLf, EolConversion.CRLF, dataEndCrLfConverted),
-            (dataEndByCrLf, EolConversion.CRLF, dataEndCrLfConverted),
-        };
-
-        private static IEnumerable<object[]> CreateTestScenario(EncodingType encoding, byte[] input, EolConversion conversion, byte[] output)
-        {
-            var bom = encoding.GetByteOrderMark();
-            var inputInUnits = input.ToUnits(encoding);
-            var outputInUnits = output.ToUnits(encoding);
-            var inputInUnitsWithBom = bom.Concat(inputInUnits).ToArray();
-            var outputInUnitsWithBom = bom.Concat(outputInUnits).ToArray();
-            return new List<object[]>
-            {
-                new object[] { encoding, false, inputInUnits, conversion, outputInUnits },
-                new object[] { encoding, true, inputInUnitsWithBom, conversion, outputInUnitsWithBom },
-            };
+            // Assert
+            AssertOutput(expectedOutput, expectedOutput.Length, outputData, outputLength);
         }
-    
+
+        [Fact]
+        public void Convert_WhenOutputDataIsNull_ThenThrowArgumentNullException()
+        {
+            // Arrange
+            byte[] data = new byte[3] { 1, 1, 1};
+            int dataLength = 3;
+            byte[] outputData = null;
+            SetupSutWithDummyData();
+
+            // Act + Assert
+            Assert.Throws<ArgumentNullException>(() => sut.Convert(data, dataLength, outputData, out outputLength));
+        }
+
+        [Fact]
+        public void Convert_WhenOutputDataDoesNotHaveEnoughSpace_ThenThrowArgumentException()
+        {
+            // Arrange
+            byte[] data = new byte[1] { ByteCode.Cr };
+            int dataLength = 1;
+            SetupSut(EolConversion.CRLF, EncodingType.Utf8, hasBom: false);
+
+            // CRs will be converted to CRLF so the outputdata will need more space than data
+            byte[] outputData = new byte[data.Length];
+
+            // Act + Assert
+            Assert.Throws<ArgumentException>(() => sut.Convert(data, dataLength, outputData, out outputLength));
+        }
+
+        [Fact]
+        public void Convert_WhenDataIsNull_ThenReturnEmptyResult()
+        {
+            // Arrange
+            byte[] data = null;
+            int dataLength = 0;
+            SetupSutWithDummyData();
+
+            // Act
+            sut.Convert(data, dataLength, outputData, out outputLength);
+
+            // Assert
+            AssertEmptyOutput(outputData, outputLength);
+        }
+
+        [Fact]
+        public void Convert_WhenDataIsEmpty_ThenReturnEmptyResult()
+        {
+            // Arrange
+            byte[] emptyData = new byte[0];
+            int dataLength = 0;
+            SetupSutWithDummyData();
+
+            // Act
+            sut.Convert(emptyData, dataLength, outputData, out outputLength);
+
+            // Assert
+            AssertEmptyOutput(outputData, outputLength);
+        }
+
+        [Fact]
+        public void Convert_WhenDataLengthIsZero_ThenReturnEmptyResult()
+        {
+            // Arrange
+            byte[] dummyData = new byte[3] { ByteCode.Cr, 1, 1 };
+            int dataLength = 0;
+            SetupSutWithDummyData();
+
+            // Act
+            sut.Convert(dummyData, dataLength, outputData, out outputLength);
+
+            // Assert
+            AssertEmptyOutput(outputData, outputLength);
+        }
+
+        [Fact]
+        public void Convert_WhenDataDoesNotHaveAnyEol_ThenReturnInput()
+        {
+            // Arrange
+            byte[] dataWithoutEol = new byte[3] { 1, 1, 1 };
+            SetupSutWithDummyData();
+
+            // Act
+            sut.Convert(dataWithoutEol, dataWithoutEol.Length, outputData, out outputLength);
+
+            // Assert
+            AssertOutput(dataWithoutEol, dataWithoutEol.Length, outputData, outputLength);
+        }
+
+        [Fact]
+        public void Convert_WhenEncodingNotDetected_ThenReturnInput()
+        {
+            // Arrange
+            byte[] data = new byte[3] { ByteCode.Cr, 1, 1 };
+            SetupSut(EolConversion.CR, EncodingType.None, hasBom: false);
+
+            // Act
+            sut.Convert(data, data.Length, outputData, out outputLength);
+
+            // Assert
+            AssertOutput(data, data.Length, outputData, outputLength);
+        }
+
+        private void AssertEmptyOutput(byte[] outputData, int outputLength)
+        {
+            AssertOutput(new byte[0], 0, outputData, outputLength);
+        }
+
+        private void AssertOutput(byte[] expectedData, int expectedDataLength, byte[] outputData, int outputLength)
+        {
+            Assert.Equal(expectedDataLength, outputLength);
+            Assert.Equal(expectedData, outputData?.Take(outputLength));
+        }
+
+        public static IEnumerable<object[]> TestScenarios => EolConversionTestScenarios.TestScenarios;
+
         private void SetupSut(EolConversion eolConversion, EncodingType encoding, bool hasBom)
         {
             encodingDetectorMock = IEncodingDetectorMockBuilder.Create()
@@ -124,10 +170,14 @@ namespace EolConverter.Test
             CreateSut(eolConversion);
         }
 
+        private void SetupSutWithDummyData()
+        {
+            SetupSut(EolConversion.CR, EncodingType.None, false);
+        }
+
         private void CreateSut(EolConversion eolConversion)
         {
             sut = new EolConverter(eolConversion, encodingDetectorMock.Object);
         }
-
     }
 }

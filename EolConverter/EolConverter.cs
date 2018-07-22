@@ -1,10 +1,7 @@
 ﻿using EolConverter.ByteUtils;
 using EolConverter.Encoding;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EolConverter
 {
@@ -19,11 +16,29 @@ namespace EolConverter
             this.encodingDetector = encodingDetector;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="dataLength"></param>
+        /// <param name="outputData"></param>
+        /// <param name="outputLength"></param>
         public void Convert(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
-            if (data == null || dataLength == 0)
+            if (outputData == null)
             {
-                CopyInputDataToOutput(data, dataLength, outputData, out outputLength);
+                throw new ArgumentNullException(nameof(outputData), $"The {nameof(outputData)} array will hold the result so it can't be null");
+            }
+
+            //if (outputData.Length < dataLength)
+            //{
+            //    throw new ArgumentException($"The {nameof(outputData)} array does not have enough space to store the result", nameof(outputData));
+            //}
+
+            if (data == null || data.Length == 0 || dataLength == 0)
+            {
+                Array.Clear(outputData, 0, outputData.Length);
+                outputLength = 0;
                 return;
             }
 
@@ -45,7 +60,7 @@ namespace EolConverter
 
         private void CopyInputDataToOutput(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
-            outputData = data;
+            data.CopyTo(outputData, 0);
             outputLength = dataLength;
         }
 
