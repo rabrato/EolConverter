@@ -1,13 +1,11 @@
-﻿using EolConverter.Test.TestUtils;
+﻿using EolConverter.ByteUtils;
+using EolConverter.Encoding;
+using EolConverter.Test.TestUtils;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using Moq;
-using EolConverter.Encoding;
-using EolConverter.ByteUtils;
 
 namespace EolConverter.Test
 {

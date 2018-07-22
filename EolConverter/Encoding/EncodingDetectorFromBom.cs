@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EolConverter.Encoding
 {
@@ -35,9 +32,9 @@ namespace EolConverter.Encoding
             return EncodingType.None;
         }
 
-        private bool HasBom(byte[] data, int dataLength, EncodingType enconding)
+        private bool HasBom(byte[] data, int dataLength, EncodingType encoding)
         {
-            var bom = enconding.GetByteOrderMark();
+            var bom = encoding.GetByteOrderMark();
             if (data.Length < bom.Length || dataLength < bom.Length)
             {
                 return false;

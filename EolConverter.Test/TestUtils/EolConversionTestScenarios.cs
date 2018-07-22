@@ -1,10 +1,7 @@
 ﻿using EolConverter.ByteUtils;
 using EolConverter.Encoding;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EolConverter.Test.TestUtils
 {

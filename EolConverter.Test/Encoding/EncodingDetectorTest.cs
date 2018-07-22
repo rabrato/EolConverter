@@ -1,13 +1,7 @@
-﻿using EolConverter.Encoding;
-using EolConverter;
-using System;
+﻿using EolConverter.ByteUtils;
+using EolConverter.Encoding;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using EolConverter.ByteUtils;
-using EolConverter.Test.TestUtils;
 
 namespace EolConverter.Test.Encoding
 {
