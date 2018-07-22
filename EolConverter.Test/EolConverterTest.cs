@@ -64,7 +64,7 @@ namespace EolConverter.Test
         public void Convert_WhenOutputDataDoesNotHaveEnoughSpace_ThenThrowArgumentException()
         {
             // Arrange
-            byte[] data = new byte[1] { ByteCode.Cr };
+            byte[] data = new byte[1] { ByteCode.CR };
             int dataLength = 1;
             SetupSut(EolConversion.CRLF, EncodingType.Utf8, hasBom: false);
 
@@ -79,7 +79,7 @@ namespace EolConverter.Test
         public void Convert_WhenOutputDataHasExactlyRequiredSpace()
         {
             // Arrange
-            byte[] data = new byte[1] { ByteCode.Cr };
+            byte[] data = new byte[1] { ByteCode.CR };
             int dataLength = 1;
             SetupSut(EolConversion.LF, EncodingType.Utf8, hasBom: false);
 
@@ -90,7 +90,7 @@ namespace EolConverter.Test
             sut.Convert(data, dataLength, outputData, out outputLength);
 
             // Assert
-            AssertOutput(new byte[1] { ByteCode.Lf }, dataLength, outputData, outputLength);
+            AssertOutput(new byte[1] { ByteCode.LF }, dataLength, outputData, outputLength);
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace EolConverter.Test
         public void Convert_WhenDataLengthIsZero_ThenReturnEmptyResult()
         {
             // Arrange
-            byte[] dummyData = new byte[3] { ByteCode.Cr, 1, 1 };
+            byte[] dummyData = new byte[3] { ByteCode.CR, 1, 1 };
             int dataLength = 0;
             SetupSutWithDummyData();
 
@@ -156,7 +156,7 @@ namespace EolConverter.Test
         public void Convert_WhenEncodingNotDetected_ThenReturnInput()
         {
             // Arrange
-            byte[] data = new byte[3] { ByteCode.Cr, 1, 1 };
+            byte[] data = new byte[3] { ByteCode.CR, 1, 1 };
             SetupSut(EolConversion.CR, EncodingType.None, hasBom: false);
 
             // Act

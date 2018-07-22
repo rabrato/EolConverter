@@ -79,7 +79,7 @@ namespace EolConverter
 
                 ProcessUnit(outputData, currentUnit, targetEolUnits, encoding, ref outputIndex);
 
-                if (currentUnit.IsCrUnit(encoding) && nextUnit.IsLfUnit(encoding))
+                if (currentUnit.IsCRUnit(encoding) && nextUnit.IsLFUnit(encoding))
                 {
                     // If CRLF then the do not process the next LF unit because the end of line has been inserted while processing the CR
                     dataIndex += numBytesPerUnit;

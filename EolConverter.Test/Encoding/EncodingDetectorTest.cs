@@ -128,10 +128,10 @@ namespace EolConverter.Test.Encoding
         }
 
         [Theory]
-        [InlineData(new byte[2] { ByteCode.Cr, 0, }, 11)]
-        [InlineData(new byte[4] { ByteCode.Cr, 0, 0, 0 }, 9)]
-        [InlineData(new byte[4] { ByteCode.Lf, 0, 0, 0 }, 10)]
-        [InlineData(new byte[4] { ByteCode.Lf, 0, 0, 0 }, 11)]
+        [InlineData(new byte[2] { ByteCode.CR, 0, }, 11)]
+        [InlineData(new byte[4] { ByteCode.CR, 0, 0, 0 }, 9)]
+        [InlineData(new byte[4] { ByteCode.LF, 0, 0, 0 }, 10)]
+        [InlineData(new byte[4] { ByteCode.LF, 0, 0, 0 }, 11)]
         public void GetEncoding_WhenEolIsNotFirstByteInUnitAndIsFollowedByNullBytes_ThenEncodingCanNotBeDetected(byte[] eolBytesFollowedByNullBytes, int startIndex)
         {
             // Arrange
@@ -148,10 +148,10 @@ namespace EolConverter.Test.Encoding
         }
 
         [Theory]
-        [InlineData(new byte[2] { 0, ByteCode.Cr }, 9)]
-        [InlineData(new byte[4] { 0, 0, 0, ByteCode.Cr }, 5)]
-        [InlineData(new byte[4] { 0, 0, 0, ByteCode.Lf }, 6)]
-        [InlineData(new byte[4] { 0, 0, 0, ByteCode.Lf }, 7)]
+        [InlineData(new byte[2] { 0, ByteCode.CR }, 9)]
+        [InlineData(new byte[4] { 0, 0, 0, ByteCode.CR }, 5)]
+        [InlineData(new byte[4] { 0, 0, 0, ByteCode.LF }, 6)]
+        [InlineData(new byte[4] { 0, 0, 0, ByteCode.LF }, 7)]
         public void GetEncoding_WhenEolIsNotLastByteInUnitAndIsPrecededByNullBytes_ThenEncodingCanNotBeDetected(byte[] eolBytesPrecededByNullBytes, int startIndex)
         {
             // Arrange
@@ -171,7 +171,7 @@ namespace EolConverter.Test.Encoding
         public void GetEncoding_WhenDataContainsOneByteEolButAlsoANullByte_ThenEncoding()
         {
             // Arrange
-            byte[] data = new byte[5] { 1, 0, 1, ByteCode.Cr, 1 };
+            byte[] data = new byte[5] { 1, 0, 1, ByteCode.CR, 1 };
 
             CreateSut();
 
@@ -262,23 +262,23 @@ namespace EolConverter.Test.Encoding
 
         public static IEnumerable<object[]> EolPerUtfTestData => new List<object[]>
         {
-            new object[] { new byte[1] { ByteCode.Cr}, EncodingType.Utf8 },
-            new object[] { new byte[2] { ByteCode.Cr, ByteCode.Null}, EncodingType.Utf16LE },
-            new object[] { new byte[4] { ByteCode.Cr, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
-            new object[] { new byte[2] { ByteCode.Null, ByteCode.Cr }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Cr }, EncodingType.Utf32BE },
+            new object[] { new byte[1] { ByteCode.CR}, EncodingType.Utf8 },
+            new object[] { new byte[2] { ByteCode.CR, ByteCode.Null}, EncodingType.Utf16LE },
+            new object[] { new byte[4] { ByteCode.CR, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[2] { ByteCode.Null, ByteCode.CR }, EncodingType.Utf16BE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.CR }, EncodingType.Utf32BE },
 
-            new object[] { new byte[1] { ByteCode.Lf}, EncodingType.Utf8 },
-            new object[] { new byte[2] { ByteCode.Lf, ByteCode.Null}, EncodingType.Utf16LE },
-            new object[] { new byte[4] { ByteCode.Lf, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
-            new object[] { new byte[2] { ByteCode.Null, ByteCode.Lf }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Lf }, EncodingType.Utf32BE },
+            new object[] { new byte[1] { ByteCode.LF}, EncodingType.Utf8 },
+            new object[] { new byte[2] { ByteCode.LF, ByteCode.Null}, EncodingType.Utf16LE },
+            new object[] { new byte[4] { ByteCode.LF, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[2] { ByteCode.Null, ByteCode.LF }, EncodingType.Utf16BE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.LF }, EncodingType.Utf32BE },
 
-            new object[] { new byte[2] { ByteCode.Cr, ByteCode.Lf }, EncodingType.Utf8},
-            new object[] { new byte[4] { ByteCode.Cr, ByteCode.Null, ByteCode.Lf, ByteCode.Null }, EncodingType.Utf16LE },
-            new object[] { new byte[8] { ByteCode.Cr, ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Lf, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
-            new object[] { new byte[4] { ByteCode.Null, ByteCode.Cr, ByteCode.Null, ByteCode.Lf }, EncodingType.Utf16BE },
-            new object[] { new byte[8] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Cr, ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Lf }, EncodingType.Utf32BE },
+            new object[] { new byte[2] { ByteCode.CR, ByteCode.LF }, EncodingType.Utf8},
+            new object[] { new byte[4] { ByteCode.CR, ByteCode.Null, ByteCode.LF, ByteCode.Null }, EncodingType.Utf16LE },
+            new object[] { new byte[8] { ByteCode.CR, ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.LF, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.CR, ByteCode.Null, ByteCode.LF }, EncodingType.Utf16BE },
+            new object[] { new byte[8] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.CR, ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.LF }, EncodingType.Utf32BE },
         };
 
         private byte[] GetData()

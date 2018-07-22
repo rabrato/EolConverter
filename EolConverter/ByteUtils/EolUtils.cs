@@ -12,7 +12,7 @@ namespace EolConverter.ByteUtils
 
         public static IEnumerable<int> FindEolByteIndexes(this byte[] data)
         {
-            byte[] eolBytes = new byte[2] { ByteCode.Cr, ByteCode.Lf };
+            byte[] eolBytes = new byte[2] { ByteCode.CR, ByteCode.LF };
             return eolBytes.SelectMany(b => data.FindByteIndexes(b));
         }
 

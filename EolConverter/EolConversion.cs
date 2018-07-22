@@ -5,13 +5,13 @@ namespace EolConverter
 {
     public enum EolConversion
     {
-        [EolBytes(ByteCode.Cr)]
+        [EolBytes(ByteCode.CR)]
         CR,
 
-        [EolBytes(ByteCode.Lf)]
+        [EolBytes(ByteCode.LF)]
         LF,
 
-        [EolBytes(ByteCode.Cr, ByteCode.Lf)]
+        [EolBytes(ByteCode.CR, ByteCode.LF)]
         CRLF
     }
 }

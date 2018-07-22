@@ -3,7 +3,7 @@
     public class ByteCode
     {
         public const byte Null = 0;
-        public const byte Cr = 13;
-        public const byte Lf = 10;
+        public const byte CR = 13;
+        public const byte LF = 10;
     }
 }

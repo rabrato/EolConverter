@@ -7,17 +7,17 @@ namespace EolConverter.ByteUtils
     {
         public static bool IsEolUnit(this byte[] unit, EncodingType encoding)
         {
-            return unit.IsCrUnit(encoding) || unit.IsLfUnit(encoding);
+            return unit.IsCRUnit(encoding) || unit.IsLFUnit(encoding);
         }
 
-        public static bool IsCrUnit(this byte[] unit, EncodingType encoding)
+        public static bool IsCRUnit(this byte[] unit, EncodingType encoding)
         {
-            return unit.IsCharUnit(ByteCode.Cr, encoding);
+            return unit.IsCharUnit(ByteCode.CR, encoding);
         }
 
-        public static bool IsLfUnit(this byte[] unit, EncodingType encoding)
+        public static bool IsLFUnit(this byte[] unit, EncodingType encoding)
         {
-            return unit.IsCharUnit(ByteCode.Lf, encoding);
+            return unit.IsCharUnit(ByteCode.LF, encoding);
         }
 
         public static byte[] ToUnits(this byte[] byteChars, EncodingType encoding)

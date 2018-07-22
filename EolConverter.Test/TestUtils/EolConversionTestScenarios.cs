@@ -7,24 +7,24 @@ namespace EolConverter.Test.TestUtils
 {
     internal class EolConversionTestScenarios
     {
-        private static byte[] data = new byte[11] { 1, ByteCode.Cr, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataCrConverted = new byte[10] { 1, ByteCode.Cr, 1, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Cr, 1, ByteCode.Cr, 1 };
-        private static byte[] dataLfConverted = new byte[10] { 1, ByteCode.Lf, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Lf, 1, ByteCode.Lf, 1 };
-        private static byte[] dataCrLfConverted = new byte[15] { 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1 };
+        private static byte[] data = new byte[11] { 1, ByteCode.CR, 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1 };
+        private static byte[] dataCRConverted = new byte[10] { 1, ByteCode.CR, 1, ByteCode.CR, 1, ByteCode.CR, ByteCode.CR, 1, ByteCode.CR, 1 };
+        private static byte[] dataLFConverted = new byte[10] { 1, ByteCode.LF, 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.LF, 1, ByteCode.LF, 1 };
+        private static byte[] dataCRLFConverted = new byte[15] { 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, 1 };
 
-        private static byte[] dataStartByCr = new byte[11] { ByteCode.Cr, 1, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataStartByLf = new byte[11] { ByteCode.Lf, 1, 1, ByteCode.Cr, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataStartByCrLf = new byte[12] { ByteCode.Cr, ByteCode.Lf, 1, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1 };
-        private static byte[] dataStartCrConverted = new byte[10] { ByteCode.Cr, 1, 1, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Cr, 1, ByteCode.Cr, 1 };
-        private static byte[] dataStartLfConverted = new byte[10] { ByteCode.Lf, 1, 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Lf, 1, ByteCode.Lf, 1 };
-        private static byte[] dataStartCrLfConverted = new byte[15] { ByteCode.Cr, ByteCode.Lf, 1, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1 };
+        private static byte[] dataStartByCR = new byte[11] { ByteCode.CR, 1, 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1 };
+        private static byte[] dataStartByLF = new byte[11] { ByteCode.LF, 1, 1, ByteCode.CR, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1 };
+        private static byte[] dataStartByCRLF = new byte[12] { ByteCode.CR, ByteCode.LF, 1, 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1 };
+        private static byte[] dataStartCRConverted = new byte[10] { ByteCode.CR, 1, 1, ByteCode.CR, 1, ByteCode.CR, ByteCode.CR, 1, ByteCode.CR, 1 };
+        private static byte[] dataStartLFConverted = new byte[10] { ByteCode.LF, 1, 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.LF, 1, ByteCode.LF, 1 };
+        private static byte[] dataStartCRLFConverted = new byte[15] { ByteCode.CR, ByteCode.LF, 1, 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, 1 };
 
-        private static byte[] dataEndByCr = new byte[10] { 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr };
-        private static byte[] dataEndByLf = new byte[10] { 1, ByteCode.Cr, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Lf };
-        private static byte[] dataEndByCrLf = new byte[11] { 1, ByteCode.Cr, 1, ByteCode.Lf, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf };
-        private static byte[] dataEndCrConverted = new byte[9] { 1, ByteCode.Cr, 1, ByteCode.Cr, ByteCode.Cr, 1, ByteCode.Cr, 1, ByteCode.Cr };
-        private static byte[] dataEndLfConverted = new byte[9] { 1, ByteCode.Lf, 1, ByteCode.Lf, ByteCode.Lf, 1, ByteCode.Lf, 1, ByteCode.Lf };
-        private static byte[] dataEndCrLfConverted = new byte[14] { 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf, 1, ByteCode.Cr, ByteCode.Lf };
+        private static byte[] dataEndByCR = new byte[10] { 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR };
+        private static byte[] dataEndByLF = new byte[10] { 1, ByteCode.CR, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.LF };
+        private static byte[] dataEndByCRLF = new byte[11] { 1, ByteCode.CR, 1, ByteCode.LF, ByteCode.CR, 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF };
+        private static byte[] dataEndCRConverted = new byte[9] { 1, ByteCode.CR, 1, ByteCode.CR, ByteCode.CR, 1, ByteCode.CR, 1, ByteCode.CR };
+        private static byte[] dataEndLFConverted = new byte[9] { 1, ByteCode.LF, 1, ByteCode.LF, ByteCode.LF, 1, ByteCode.LF, 1, ByteCode.LF };
+        private static byte[] dataEndCRLFConverted = new byte[14] { 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF, 1, ByteCode.CR, ByteCode.LF };
 
         public static IEnumerable<object[]> TestScenarios => 
             EncodingsToTest.SelectMany(encoding =>
@@ -45,33 +45,33 @@ namespace EolConverter.Test.TestUtils
         private static IEnumerable<(byte[] input, EolConversion conversion, byte[] output)> DataScenarios => 
             new List<(byte[], EolConversion, byte[])>
         {
-            (data, EolConversion.CR, dataCrConverted),
-            (data, EolConversion.LF, dataLfConverted),
-            (data, EolConversion.CRLF, dataCrLfConverted),
+            (data, EolConversion.CR, dataCRConverted),
+            (data, EolConversion.LF, dataLFConverted),
+            (data, EolConversion.CRLF, dataCRLFConverted),
 
-            (dataStartByCr, EolConversion.CR, dataStartCrConverted),
-            (dataStartByLf, EolConversion.CR, dataStartCrConverted),
-            (dataStartByCrLf, EolConversion.CR, dataStartCrConverted),
+            (dataStartByCR, EolConversion.CR, dataStartCRConverted),
+            (dataStartByLF, EolConversion.CR, dataStartCRConverted),
+            (dataStartByCRLF, EolConversion.CR, dataStartCRConverted),
 
-            (dataStartByCr, EolConversion.LF, dataStartLfConverted),
-            (dataStartByLf, EolConversion.LF, dataStartLfConverted),
-            (dataStartByCrLf, EolConversion.LF, dataStartLfConverted),
+            (dataStartByCR, EolConversion.LF, dataStartLFConverted),
+            (dataStartByLF, EolConversion.LF, dataStartLFConverted),
+            (dataStartByCRLF, EolConversion.LF, dataStartLFConverted),
 
-            (dataStartByCr, EolConversion.CRLF, dataStartCrLfConverted),
-            (dataStartByLf, EolConversion.CRLF, dataStartCrLfConverted),
-            (dataStartByCrLf, EolConversion.CRLF, dataStartCrLfConverted),
+            (dataStartByCR, EolConversion.CRLF, dataStartCRLFConverted),
+            (dataStartByLF, EolConversion.CRLF, dataStartCRLFConverted),
+            (dataStartByCRLF, EolConversion.CRLF, dataStartCRLFConverted),
 
-            (dataEndByCr, EolConversion.CR, dataEndCrConverted),
-            (dataEndByLf, EolConversion.CR, dataEndCrConverted),
-            (dataEndByCrLf, EolConversion.CR, dataEndCrConverted),
+            (dataEndByCR, EolConversion.CR, dataEndCRConverted),
+            (dataEndByLF, EolConversion.CR, dataEndCRConverted),
+            (dataEndByCRLF, EolConversion.CR, dataEndCRConverted),
                  
-            (dataEndByCr, EolConversion.LF, dataEndLfConverted),
-            (dataEndByLf, EolConversion.LF, dataEndLfConverted),
-            (dataEndByCrLf, EolConversion.LF, dataEndLfConverted),
+            (dataEndByCR, EolConversion.LF, dataEndLFConverted),
+            (dataEndByLF, EolConversion.LF, dataEndLFConverted),
+            (dataEndByCRLF, EolConversion.LF, dataEndLFConverted),
                  
-            (dataEndByCr, EolConversion.CRLF, dataEndCrLfConverted),
-            (dataEndByLf, EolConversion.CRLF, dataEndCrLfConverted),
-            (dataEndByCrLf, EolConversion.CRLF, dataEndCrLfConverted),
+            (dataEndByCR, EolConversion.CRLF, dataEndCRLFConverted),
+            (dataEndByLF, EolConversion.CRLF, dataEndCRLFConverted),
+            (dataEndByCRLF, EolConversion.CRLF, dataEndCRLFConverted),
         };
 
         private static IEnumerable<object[]> CreateTestScenario(EncodingType encoding, byte[] input, EolConversion conversion, byte[] output)
