@@ -13,6 +13,9 @@ namespace EolConverter.Test.Encoding
 {
     public class EncodingDetectorTest
     {
+        private const byte DummyByte = 100;
+        private const int BufferSize = 1024;
+
         private EncodingDetector sut;
 
         [Theory, MemberData(nameof(BomPerUtfTestData))]
@@ -118,7 +121,7 @@ namespace EolConverter.Test.Encoding
             int bufferLength = 10 * expectedEncoding.GetNumBytesPerUnit();
             byte[] data = new byte[bufferLength];
             int dataLength = bufferLength / 2;
-            data.FillDataWithDummyValues(dataLength);
+            FillDataWithDummyValues(data, dataLength);
             eolBytes.CopyTo(data, dataLength - eolBytes.Length);
 
             CreateSut();
@@ -286,7 +289,18 @@ namespace EolConverter.Test.Encoding
 
         private byte[] GetData()
         {
-            return DummyByteDataProvider.GetDummyData();
+            byte[] data = new byte[BufferSize];
+            FillDataWithDummyValues(data);
+            return data;
+        }
+
+        private void FillDataWithDummyValues(byte[] data, int? dataLength = null)
+        {
+            dataLength = dataLength ?? data.Length;
+            for (int i = 0; i < dataLength; i++)
+            {
+                data[i] = DummyByte;
+            }
         }
 
         private void CreateSut()

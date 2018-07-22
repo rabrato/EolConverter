@@ -84,10 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Encoding\EncodingDetectorTest.cs" />
-    <Compile Include="Testsdss.cs" />
+    <Compile Include="EolDataConverterIntegrationTest.cs" />
     <Compile Include="EolConverterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestUtils\DummyByteDataProvider.cs" />
     <Compile Include="TestUtils\EolConversionTestScenarios.cs" />
     <Compile Include="TestUtils\IEncodingDetectorMockBuilder.cs" />
   </ItemGroup>
@@ -103,6 +102,49 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BEBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BEBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BEBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BEBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BENoBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BENoBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BENoBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16BE\Utf16BENoBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LEBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LEBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LEBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LEBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LENoBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LENoBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LENoBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf16LE\Utf16LENoBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BEBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BEBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BEBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BEBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BENoBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BENoBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BENoBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32BE\Utf32BENoBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LEBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LEBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LEBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LEBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LENoBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LENoBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LENoBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf32LE\Utf32LENoBom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8Bom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8Bom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8Bom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8Bom_LF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8NoBom.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8NoBom_CR.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8NoBom_CRLF.txt" />
+    <EmbeddedResource Include="TestUtils\TestFiles\Utf8\Utf8NoBom_LF.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
