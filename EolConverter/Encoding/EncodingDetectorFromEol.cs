@@ -29,6 +29,7 @@ namespace EolConverter.Encoding
                 // If there are not eol bytes then the encoding is not needed because the file will not need eol replacement.
                 return EncodingType.None;
             }
+
             var context = new EncodingDetectionContext(data, dataLength, eolIndexes);
             foreach (var encodingToCheck in encodingsToCheckOrdered)
             {
@@ -71,71 +72,63 @@ namespace EolConverter.Encoding
                 return false;
             }
 
-            foreach (int eolIndex in context.EolIndexes)
-            {
+            return context.EolIndexes.Any(eolIndex => {
                 // Check eol is not sorrounded by null bytes, checking also corner cases (eol is first or last bytes)
-                if ((eolIndex == 0 || context.Data[eolIndex - 1] != ByteCode.Null)
-                    && (eolIndex == context.DataLength - 1 || context.Data[eolIndex + 1] != ByteCode.Null))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+                bool notPrecededByNull = (eolIndex == 0 || context.Data[eolIndex - 1] != ByteCode.Null);
+                bool notFollowedByNull = (eolIndex == context.DataLength - 1 || context.Data[eolIndex + 1] != ByteCode.Null);
+                return notPrecededByNull && notFollowedByNull;
+            });
         }
 
         private bool IsLittleEndianEncoding(EncodingDetectionContext context, EncodingType encoding)
         {
-            int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
-            if (ContainsNullBytesUnit(context, numBytesPerUnit))
-            {
-                return false;
-            }
-
-            int numNullBytes = numBytesPerUnit - 1;
-            foreach (int eolIndex in context.EolIndexes)
-            {
-                bool isFollowedByNullBytes = IsFollowedByNullBytes(context, eolIndex, numNullBytes);
-                bool isFirstByteInUnit = eolIndex % numBytesPerUnit == 0;
-                if (isFirstByteInUnit && isFollowedByNullBytes)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IsFromEncoding(context, encoding, IsLittleEndian);
         }
 
         private bool IsBigEndianEncoding(EncodingDetectionContext context, EncodingType encoding)
         {
+            return IsFromEncoding(context, encoding, IsBigEndian);
+        }
+
+        private bool IsFromEncoding(
+            EncodingDetectionContext context, 
+            EncodingType encoding, 
+            Func<EncodingDetectionContext, int, bool> IsFromEndiannes)
+        {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
-            if (ContainsNullBytesUnit(context, numBytesPerUnit))
+            // If there is a entire null unit within the data then can't be this encoding
+            if (ContainsNullBytesUnit(context.Data, context.DataLength, numBytesPerUnit))
             {
                 return false;
             }
 
-            int numNullBytes = numBytesPerUnit - 1;
-            foreach (int eolIndex in context.EolIndexes)
-            {
-                bool isPrecededByNullBytes = IsPrecededByNullBytes(context, eolIndex, numNullBytes);
-                bool isLastByteInUnit = eolIndex % numBytesPerUnit == numBytesPerUnit - 1;
-                if (isLastByteInUnit && isPrecededByNullBytes)
-                {
-                    return true;
-                }
-            }
+            return IsFromEndiannes(context, numBytesPerUnit);
+        }
 
-            return false;
+        private bool IsLittleEndian(EncodingDetectionContext context, int numBytesPerUnit)
+        {
+            return context.EolIndexes.Any(eolIndex => {
+                bool isFollowedByNullBytes = IsFollowedByNullBytes(context.Data, context.DataLength, eolIndex, numNullBytes: numBytesPerUnit - 1);
+                bool isFirstByteInUnit = eolIndex % numBytesPerUnit == 0;
+                return isFirstByteInUnit && isFollowedByNullBytes;
+            });
+        }
+
+        private bool IsBigEndian(EncodingDetectionContext context, int numBytesPerUnit)
+        {
+            return context.EolIndexes.Any(eolIndex => {
+                bool isPrecededByNullBytes = IsPrecededByNullBytes(context.Data, eolIndex, numNullBytes: numBytesPerUnit - 1);
+                bool isLastByteInUnit = eolIndex % numBytesPerUnit == numBytesPerUnit - 1;
+                return isLastByteInUnit && isPrecededByNullBytes;
+            });
         }
         
-        private bool ContainsNullBytesUnit(EncodingDetectionContext context, int numBytesPerUnit)
+        private bool ContainsNullBytesUnit(byte[] data, int dataLength, int numBytesPerUnit)
         {
             var nullBytesUnit = new byte[numBytesPerUnit];
-            for (int i = 0; i <= context.DataLength - numBytesPerUnit; i += numBytesPerUnit)
+            for (int i = 0; i <= dataLength - numBytesPerUnit; i += numBytesPerUnit)
             {
-                if (context.Data.Skip(i).Take(numBytesPerUnit).All(b => b == ByteCode.Null))
+                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == ByteCode.Null))
                 {
                     return true;
                 }
@@ -144,7 +137,7 @@ namespace EolConverter.Encoding
             return false;
         }
 
-        private bool IsPrecededByNullBytes(EncodingDetectionContext context, int byteIndex, int numNullBytes)
+        private bool IsPrecededByNullBytes(byte[] data, int byteIndex, int numNullBytes)
         {
             if (byteIndex - numNullBytes < 0)
             {
@@ -153,7 +146,7 @@ namespace EolConverter.Encoding
 
             for (int i = 1; i <= numNullBytes; i++)
             {
-                if (context.Data[byteIndex - i] != ByteCode.Null)
+                if (data[byteIndex - i] != ByteCode.Null)
                 {
                     return false;
                 }
@@ -162,16 +155,16 @@ namespace EolConverter.Encoding
             return true;
         }
 
-        private bool IsFollowedByNullBytes(EncodingDetectionContext context, int byteIndex, int numNullBytes)
+        private bool IsFollowedByNullBytes(byte[] data, int dataLength, int byteIndex, int numNullBytes)
         {
-            if (byteIndex + numNullBytes >= context.DataLength)
+            if (byteIndex + numNullBytes >= dataLength)
             {
                 return false;
             }
 
             for (int i = numNullBytes; i > 0; i--)
             {
-                if (context.Data[byteIndex + i] != ByteCode.Null)
+                if (data[byteIndex + i] != ByteCode.Null)
                 {
                     return false;
                 }
