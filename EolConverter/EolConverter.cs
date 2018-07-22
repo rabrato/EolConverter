@@ -7,8 +7,8 @@ namespace EolConverter
 {
     public class EolConverter
     {
-        EolConversion eolConversion;
-        IEncodingDetector encodingDetector;
+        private readonly EolConversion eolConversion;
+        private readonly IEncodingDetector encodingDetector;
 
         public EolConverter(EolConversion eolConversion, IEncodingDetector encodingDetector)
         {

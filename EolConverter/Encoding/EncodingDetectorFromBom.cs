@@ -7,7 +7,7 @@ namespace EolConverter.Encoding
     {
         private List<EncodingType> encodingsToCheckOrdered;
 
-        public EncodingDetectorFromBom()
+        internal EncodingDetectorFromBom()
         {
             encodingsToCheckOrdered = new List<EncodingType>()
             {

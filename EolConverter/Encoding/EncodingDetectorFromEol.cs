@@ -9,7 +9,7 @@ namespace EolConverter.Encoding
     {
         private Dictionary<EncodingType, Func<byte[], int, IEnumerable<int>, bool>> encodingsToCheckOrdered;
 
-        public EncodingDetectorFromEol()
+        internal EncodingDetectorFromEol()
         {
             encodingsToCheckOrdered = new Dictionary<EncodingType, Func<byte[], int, IEnumerable<int>, bool>>()
             {

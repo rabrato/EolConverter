@@ -4,7 +4,7 @@ namespace EolConverter
 {
     public class EolDataConverter
     {
-        EolConverter eolConverter;
+        private readonly EolConverter eolConverter;
 
         public EolDataConverter(EolConversion eolConversion)
         {
