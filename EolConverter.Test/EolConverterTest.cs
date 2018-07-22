@@ -35,11 +35,11 @@ namespace EolConverter.Test
         }
 
         [Theory, MemberData(nameof(TestScenarios))]
-        public void Convert_WhenDataIsEndedByZeros(EncodingType encoding, bool hasBom, byte[] data, EolConversion conversion, byte[] expectedOutput)
+        public void Convert_WhenDataIsEndedByNullBytes(EncodingType encoding, bool hasBom, byte[] data, EolConversion conversion, byte[] expectedOutput)
         {
             // Arrange
-            var dataZeroEnded = new byte[BufferSize];
-            data.CopyTo(dataZeroEnded, 0);
+            var dataNullBytesEnded = new byte[BufferSize];
+            data.CopyTo(dataNullBytesEnded, 0);
             SetupSut(conversion, encoding, hasBom);
 
             // Act

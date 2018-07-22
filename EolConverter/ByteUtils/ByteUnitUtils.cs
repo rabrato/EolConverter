@@ -34,14 +34,14 @@ namespace EolConverter.ByteUtils
         private static byte[] ToUnit(this byte byteChar, EncodingType encoding)
         {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
-            var emptyBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => ByteCode.Empty);
+            var nullBytes = Enumerable.Range(0, numBytesPerUnit - 1).Select(i => ByteCode.Null);
             var byteCharArray = new byte[1] { byteChar };
             if (encoding.IsBigEndian())
             {
-                return emptyBytes.Concat(byteCharArray).ToArray();
+                return nullBytes.Concat(byteCharArray).ToArray();
             }
 
-            return byteCharArray.Concat(emptyBytes).ToArray();
+            return byteCharArray.Concat(nullBytes).ToArray();
         }
 
         private static bool IsCharUnit(this byte[] data, byte byteChar, EncodingType encoding)

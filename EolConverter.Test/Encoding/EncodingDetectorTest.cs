@@ -138,11 +138,11 @@ namespace EolConverter.Test.Encoding
         [InlineData(new byte[4] { ByteCode.Cr, 0, 0, 0 }, 9)]
         [InlineData(new byte[4] { ByteCode.Lf, 0, 0, 0 }, 10)]
         [InlineData(new byte[4] { ByteCode.Lf, 0, 0, 0 }, 11)]
-        public void GetEncoding_WhenEolIsNotFirstByteInUnitAndIsFollowedByZeros_ThenEncodingCanNotBeDetected(byte[] eolBytesFollowedByZeros, int startIndex)
+        public void GetEncoding_WhenEolIsNotFirstByteInUnitAndIsFollowedByNullBytes_ThenEncodingCanNotBeDetected(byte[] eolBytesFollowedByNullBytes, int startIndex)
         {
             // Arrange
             byte[] data = GetData();
-            eolBytesFollowedByZeros.CopyTo(data, startIndex);
+            eolBytesFollowedByNullBytes.CopyTo(data, startIndex);
 
             CreateSut();
 
@@ -158,11 +158,11 @@ namespace EolConverter.Test.Encoding
         [InlineData(new byte[4] { 0, 0, 0, ByteCode.Cr }, 5)]
         [InlineData(new byte[4] { 0, 0, 0, ByteCode.Lf }, 6)]
         [InlineData(new byte[4] { 0, 0, 0, ByteCode.Lf }, 7)]
-        public void GetEncoding_WhenEolIsNotLastByteInUnitAndIsPrecededByZeros_ThenEncodingCanNotBeDetected(byte[] eolBytesPrecededByZeros, int startIndex)
+        public void GetEncoding_WhenEolIsNotLastByteInUnitAndIsPrecededByNullBytes_ThenEncodingCanNotBeDetected(byte[] eolBytesPrecededByNullBytes, int startIndex)
         {
             // Arrange
             byte[] data = GetData();
-            eolBytesPrecededByZeros.CopyTo(data, startIndex);
+            eolBytesPrecededByNullBytes.CopyTo(data, startIndex);
 
             CreateSut();
 
@@ -174,7 +174,7 @@ namespace EolConverter.Test.Encoding
         }
 
         [Fact]
-        public void GetEncoding_WhenDataContainsOneByteEolButThereIsAnyZeroByteWithinData_ThenEncoding()
+        public void GetEncoding_WhenDataContainsOneByteEolButAlsoANullByte_ThenEncoding()
         {
             // Arrange
             byte[] data = new byte[5] { 1, 0, 1, ByteCode.Cr, 1 };
@@ -262,29 +262,29 @@ namespace EolConverter.Test.Encoding
             new object[] { new byte[3] { 0xef, 0xbb, 0xbf }, EncodingType.Utf8 },
             new object[] { new byte[2] { 0xff, 0xfe }, EncodingType.Utf16LE },
             new object[] { new byte[2] { 0xfe, 0xff }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { 0xff, 0xfe, ByteCode.Empty, ByteCode.Empty }, EncodingType.Utf32LE },
-            new object[] { new byte[4] { ByteCode.Empty, ByteCode.Empty, 0xfe, 0xff }, EncodingType.Utf32BE },
+            new object[] { new byte[4] { 0xff, 0xfe, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, 0xfe, 0xff }, EncodingType.Utf32BE },
         };
 
         public static IEnumerable<object[]> EolPerUtfTestData => new List<object[]>
         {
             new object[] { new byte[1] { ByteCode.Cr}, EncodingType.Utf8 },
-            new object[] { new byte[2] { ByteCode.Cr, ByteCode.Empty}, EncodingType.Utf16LE },
-            new object[] { new byte[4] { ByteCode.Cr, ByteCode.Empty, ByteCode.Empty, ByteCode.Empty }, EncodingType.Utf32LE },
-            new object[] { new byte[2] { ByteCode.Empty, ByteCode.Cr }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Cr }, EncodingType.Utf32BE },
+            new object[] { new byte[2] { ByteCode.Cr, ByteCode.Null}, EncodingType.Utf16LE },
+            new object[] { new byte[4] { ByteCode.Cr, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[2] { ByteCode.Null, ByteCode.Cr }, EncodingType.Utf16BE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Cr }, EncodingType.Utf32BE },
 
             new object[] { new byte[1] { ByteCode.Lf}, EncodingType.Utf8 },
-            new object[] { new byte[2] { ByteCode.Lf, ByteCode.Empty}, EncodingType.Utf16LE },
-            new object[] { new byte[4] { ByteCode.Lf, ByteCode.Empty, ByteCode.Empty, ByteCode.Empty }, EncodingType.Utf32LE },
-            new object[] { new byte[2] { ByteCode.Empty, ByteCode.Lf }, EncodingType.Utf16BE },
-            new object[] { new byte[4] { ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Lf }, EncodingType.Utf32BE },
+            new object[] { new byte[2] { ByteCode.Lf, ByteCode.Null}, EncodingType.Utf16LE },
+            new object[] { new byte[4] { ByteCode.Lf, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[2] { ByteCode.Null, ByteCode.Lf }, EncodingType.Utf16BE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Lf }, EncodingType.Utf32BE },
 
             new object[] { new byte[2] { ByteCode.Cr, ByteCode.Lf }, EncodingType.Utf8},
-            new object[] { new byte[4] { ByteCode.Cr, ByteCode.Empty, ByteCode.Lf, ByteCode.Empty }, EncodingType.Utf16LE },
-            new object[] { new byte[8] { ByteCode.Cr, ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Lf, ByteCode.Empty, ByteCode.Empty, ByteCode.Empty }, EncodingType.Utf32LE },
-            new object[] { new byte[4] { ByteCode.Empty, ByteCode.Cr, ByteCode.Empty, ByteCode.Lf }, EncodingType.Utf16BE },
-            new object[] { new byte[8] { ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Cr, ByteCode.Empty, ByteCode.Empty, ByteCode.Empty, ByteCode.Lf }, EncodingType.Utf32BE },
+            new object[] { new byte[4] { ByteCode.Cr, ByteCode.Null, ByteCode.Lf, ByteCode.Null }, EncodingType.Utf16LE },
+            new object[] { new byte[8] { ByteCode.Cr, ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Lf, ByteCode.Null, ByteCode.Null, ByteCode.Null }, EncodingType.Utf32LE },
+            new object[] { new byte[4] { ByteCode.Null, ByteCode.Cr, ByteCode.Null, ByteCode.Lf }, EncodingType.Utf16BE },
+            new object[] { new byte[8] { ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Cr, ByteCode.Null, ByteCode.Null, ByteCode.Null, ByteCode.Lf }, EncodingType.Utf32BE },
         };
 
         private byte[] GetData()

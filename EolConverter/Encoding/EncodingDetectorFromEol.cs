@@ -68,16 +68,16 @@ namespace EolConverter.Encoding
         private bool IsUtf8(byte[] data, int dataLength, IEnumerable<int> eolIndexes)
         {
             // If there is any 0 within the data then can't be utf-8
-            if (data.Take(dataLength).Any(b => b == ByteCode.Empty))
+            if (data.Take(dataLength).Any(b => b == ByteCode.Null))
             {
                 return false;
             }
 
             foreach (int eolIndex in eolIndexes)
             {
-                // Check eol is not sorrounded by zero bytes, checking also corner cases (eol is first or last bytes)
-                if ((eolIndex == 0 || data[eolIndex - 1] != ByteCode.Empty)
-                    && (eolIndex == dataLength - 1 || data[eolIndex + 1] != ByteCode.Empty))
+                // Check eol is not sorrounded by null bytes, checking also corner cases (eol is first or last bytes)
+                if ((eolIndex == 0 || data[eolIndex - 1] != ByteCode.Null)
+                    && (eolIndex == dataLength - 1 || data[eolIndex + 1] != ByteCode.Null))
                 {
                     return true;
                 }
@@ -90,17 +90,17 @@ namespace EolConverter.Encoding
         {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
             // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
-            if (ContainsZeroBytesUnit(data, dataLength, numBytesPerUnit))
+            if (ContainsNullBytesUnit(data, dataLength, numBytesPerUnit))
             {
                 return false;
             }
 
-            int numZeros = numBytesPerUnit - 1;
+            int numNullBytes = numBytesPerUnit - 1;
             foreach (int eolIndex in eolIndexes)
             {
-                bool isFollowedByZeros = IsFollowedByZeros(data, dataLength, eolIndex, numZeros);
+                bool isFollowedByNullBytes = IsFollowedByNullBytes(data, dataLength, eolIndex, numNullBytes);
                 bool isFirstByteInUnit = eolIndex % numBytesPerUnit == 0;
-                if (isFirstByteInUnit && isFollowedByZeros)
+                if (isFirstByteInUnit && isFollowedByNullBytes)
                 {
                     return true;
                 }
@@ -113,18 +113,17 @@ namespace EolConverter.Encoding
         {
             int numBytesPerUnit = encoding.GetNumBytesPerUnit();
             // If there is a numBytesPerUnit of consecutive 0s within the data then can't be any of the encodings
-            if (ContainsZeroBytesUnit(data, dataLength, numBytesPerUnit))
+            if (ContainsNullBytesUnit(data, dataLength, numBytesPerUnit))
             {
                 return false;
             }
 
-            int numZeros = numBytesPerUnit - 1;
-
+            int numNullBytes = numBytesPerUnit - 1;
             foreach (int eolIndex in eolIndexes)
             {
-                bool isPrecededByZeros = IsPrecededByZeros(data, eolIndex, numZeros);
+                bool isPrecededByNullBytes = IsPrecededByNullBytes(data, eolIndex, numNullBytes);
                 bool isLastByteInUnit = eolIndex % numBytesPerUnit == numBytesPerUnit - 1;
-                if (isLastByteInUnit && isPrecededByZeros)
+                if (isLastByteInUnit && isPrecededByNullBytes)
                 {
                     return true;
                 }
@@ -133,12 +132,12 @@ namespace EolConverter.Encoding
             return false;
         }
         
-        private bool ContainsZeroBytesUnit(byte[] data, int dataLength, int numBytesPerUnit)
+        private bool ContainsNullBytesUnit(byte[] data, int dataLength, int numBytesPerUnit)
         {
-            var zeroBytesUnit = new byte[numBytesPerUnit];
+            var nullBytesUnit = new byte[numBytesPerUnit];
             for (int i = 0; i <= dataLength - numBytesPerUnit; i += numBytesPerUnit)
             {
-                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == ByteCode.Empty))
+                if (data.Skip(i).Take(numBytesPerUnit).All(b => b == ByteCode.Null))
                 {
                     return true;
                 }
@@ -147,16 +146,16 @@ namespace EolConverter.Encoding
             return false;
         }
 
-        private bool IsPrecededByZeros(byte[] data, int byteIndex, int numZeros)
+        private bool IsPrecededByNullBytes(byte[] data, int byteIndex, int numNullBytes)
         {
-            if (byteIndex - numZeros < 0)
+            if (byteIndex - numNullBytes < 0)
             {
                 return false;
             }
 
-            for (int i = 1; i <= numZeros; i++)
+            for (int i = 1; i <= numNullBytes; i++)
             {
-                if (data[byteIndex - i] != ByteCode.Empty)
+                if (data[byteIndex - i] != ByteCode.Null)
                 {
                     return false;
                 }
@@ -165,16 +164,16 @@ namespace EolConverter.Encoding
             return true;
         }
 
-        private bool IsFollowedByZeros(byte[] data, int dataLength, int byteIndex, int numZeros)
+        private bool IsFollowedByNullBytes(byte[] data, int dataLength, int byteIndex, int numNullBytes)
         {
-            if (byteIndex + numZeros >= dataLength)
+            if (byteIndex + numNullBytes >= dataLength)
             {
                 return false;
             }
 
-            for (int i = numZeros; i > 0; i--)
+            for (int i = numNullBytes; i > 0; i--)
             {
-                if (data[byteIndex + i] != ByteCode.Empty)
+                if (data[byteIndex + i] != ByteCode.Null)
                 {
                     return false;
                 }

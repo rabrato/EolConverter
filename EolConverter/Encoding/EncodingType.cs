@@ -25,11 +25,11 @@ namespace EolConverter.Encoding
         Utf16BE,
 
         [NumBytesPerUnit(4)]
-        [ByteOrderMark(0xff, 0xfe, ByteCode.Empty, ByteCode.Empty)]
+        [ByteOrderMark(0xff, 0xfe, ByteCode.Null, ByteCode.Null)]
         Utf32LE,
 
         [NumBytesPerUnit(4)]
-        [ByteOrderMark(ByteCode.Empty, ByteCode.Empty, 0xfe, 0xff)]
+        [ByteOrderMark(ByteCode.Null, ByteCode.Null, 0xfe, 0xff)]
         Utf32BE
     }
 }
