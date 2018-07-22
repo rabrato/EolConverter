@@ -30,11 +30,6 @@ namespace EolConverter
                 throw new ArgumentNullException(nameof(outputData), $"The {nameof(outputData)} array will hold the result so it can't be null");
             }
 
-            //if (outputData.Length < dataLength)
-            //{
-            //    throw new ArgumentException($"The {nameof(outputData)} array does not have enough space to store the result", nameof(outputData));
-            //}
-
             if (data == null || data.Length == 0 || dataLength == 0)
             {
                 Array.Clear(outputData, 0, outputData.Length);
@@ -60,8 +55,9 @@ namespace EolConverter
 
         private void CopyInputDataToOutput(byte[] data, int dataLength, byte[] outputData, out int outputLength)
         {
-            data.CopyTo(outputData, 0);
-            outputLength = dataLength;
+            int outputIndex = 0;
+            CopyDataToOutput(data, outputData, ref outputIndex);
+            outputLength = outputIndex;
         }
 
         private void Convert(byte[] data, int dataLength, EncodingType encoding, bool hasBom, byte[] outputData, out int outputLength)
@@ -72,7 +68,7 @@ namespace EolConverter
             int outputIndex = 0;
             if (hasBom)
             {
-                CopyBomTo(outputData, encoding, ref outputIndex);
+                CopyBomTo(outputData, encoding, out outputIndex);
             }
 
             int startDataIndex = outputIndex;
@@ -93,11 +89,11 @@ namespace EolConverter
             outputLength = outputIndex;
         }
 
-        private void CopyBomTo(byte[] outputData, EncodingType encoding, ref int outputIndex)
+        private void CopyBomTo(byte[] outputData, EncodingType encoding, out int outputIndex)
         {
             var bom = encoding.GetByteOrderMark();
-            bom.CopyTo(outputData, 0);
-            outputIndex += bom.Length;
+            outputIndex = 0;
+            CopyDataToOutput(bom, outputData, ref outputIndex);
         }
 
         private byte[] GetUnit(byte[] data, int unitIndex, int numBytesPerUnit)
@@ -107,12 +103,21 @@ namespace EolConverter
             return data.Skip(unitIndex).Take(bytesToTake).ToArray();
         }
 
-        private void ProcessUnit(byte[] data, byte[] unit, byte[] targetEolUnits, EncodingType encoding, ref int dataIndex)
+        private void ProcessUnit(byte[] outputData, byte[] unit, byte[] targetEolUnits, EncodingType encoding, ref int outputIndex)
         {
             byte[] unitToCopy = unit.IsEolUnit(encoding) ? targetEolUnits : unit;
+            CopyDataToOutput(unitToCopy, outputData, ref outputIndex);
+        }
 
-            unitToCopy.CopyTo(data, dataIndex);
-            dataIndex += unitToCopy.Length;
+        private void CopyDataToOutput(byte[] dataToCopy, byte[] outputData, ref int outputIndex)
+        {
+            if (outputData.Length < outputIndex + dataToCopy.Length)
+            {
+                throw new ArgumentException($"The result array does not have enough space to store the result", nameof(outputData));
+            }
+
+            dataToCopy.CopyTo(outputData, outputIndex);
+            outputIndex += dataToCopy.Length;
         }
     }
 }

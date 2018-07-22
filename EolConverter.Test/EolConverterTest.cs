@@ -59,7 +59,7 @@ namespace EolConverter.Test
             SetupSutWithDummyData();
 
             // Act + Assert
-            Assert.Throws<ArgumentNullException>(() => sut.Convert(data, dataLength, outputData, out outputLength));
+            Assert.Throws<ArgumentNullException>("outputData", () => sut.Convert(data, dataLength, outputData, out outputLength));
         }
 
         [Fact]
@@ -74,7 +74,25 @@ namespace EolConverter.Test
             byte[] outputData = new byte[data.Length];
 
             // Act + Assert
-            Assert.Throws<ArgumentException>(() => sut.Convert(data, dataLength, outputData, out outputLength));
+            Assert.Throws<ArgumentException>("outputData", () => sut.Convert(data, dataLength, outputData, out outputLength));
+        }
+
+        [Fact]
+        public void Convert_WhenOutputDataHasExactlyRequiredSpace()
+        {
+            // Arrange
+            byte[] data = new byte[1] { ByteCode.Cr };
+            int dataLength = 1;
+            SetupSut(EolConversion.LF, EncodingType.Utf8, hasBom: false);
+
+            // CRs will be converted to CRLF so the outputdata will need more space than data
+            byte[] outputData = new byte[data.Length];
+
+            // Act
+            sut.Convert(data, dataLength, outputData, out outputLength);
+
+            // Assert
+            AssertOutput(new byte[1] { ByteCode.Lf }, dataLength, outputData, outputLength);
         }
 
         [Fact]
