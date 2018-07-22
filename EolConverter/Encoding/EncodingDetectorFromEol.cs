@@ -21,6 +21,12 @@ namespace EolConverter.Encoding
             };
         }
 
+        /// <summary>
+        /// Returns the encoding of the data if can be detected through any of the end of line bytes.
+        /// </summary>
+        /// <param name="data">Data where to detect encoding.</param>
+        /// <param name="dataLength">Length of the data.</param>
+        /// <returns>The encoding if detected.</returns>
         internal EncodingType GetEncodingFromEolBytes(byte[] data, int dataLength)
         {
             var eolIndexes = data.FindEolByteIndexes();

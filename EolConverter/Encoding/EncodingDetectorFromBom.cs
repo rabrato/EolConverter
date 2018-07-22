@@ -19,6 +19,12 @@ namespace EolConverter.Encoding
             };
         }
 
+        /// <summary>
+        /// Detects the encoding of the data if it has byte order mark.
+        /// </summary>
+        /// <param name="data">Data where to look for the byte order mark.</param>
+        /// <param name="dataLength">Length of the data.</param>
+        /// <returns>The encoding if detected.</returns>
         internal EncodingType GetEncodingFromBom(byte[] data, int dataLength)
         {
             foreach (var encoding in encodingsToCheckOrdered)
